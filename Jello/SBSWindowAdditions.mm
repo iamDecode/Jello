@@ -207,12 +207,13 @@ NSString const *key = @"warp";
 }
 
 + (void) willMove:(id) notification {
-  NSLog(@"will move");
-
   NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
 
+  if (window.warp == NULL) {
+    return;
+  }
+  
   [window.warp startDragAt: NSEvent.mouseLocation];
-
   perspective = 20.0f;
   gWindowTracking = YES;                    // the loop condition during tracking
   gWindowTrackingEventOrigin = [NSEvent mouseLocation];    // most accurate (somethings wrong with NSLeftMouseDragged events and their deltaX)
@@ -233,7 +234,6 @@ NSString const *key = @"warp";
 
 
 - (void) windowMoves:(id) notification {
-  NSLog(@"window moves");
   //NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];  // remember, we are in a new thread!
 
   NSRect startFrame = [self frame];              // where was the window prior to dragging
@@ -255,6 +255,7 @@ NSString const *key = @"warp";
 
 
 float perspective = 20.0f;
+NSTimeInterval previousUpdate = 0.0;
 
 - (void) windowMoved:(id) notification {            // to be performed on the main thread
   if (!NSEqualPoints(gWindowTrackingCurrentWindowOrigin, _frame.origin)) {
@@ -274,13 +275,15 @@ float perspective = 20.0f;
     ClearWindowWarp(window);
     [window.warp endDrag];
   } else {
-    int random = arc4random() % 3;
-    random -= 1;
-    perspective += (float) random;
-    //SetWindowWarp(window, 0, 1,perspective);
+    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+    if (timestamp - previousUpdate < 0.02) {
+      return;
+    } else {
+      previousUpdate = timestamp;
+    }
 
     [window.warp dragAt:NSEvent.mouseLocation];
-    [self.warp stepWithDelta:0.005];
+    [self.warp stepWithDelta:0.07];
 
     CGSConnection cid = _CGSDefaultConnection();
     CGPointWarp mesh[8][8] = {

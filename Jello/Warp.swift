@@ -27,11 +27,13 @@ class Particle {
     self.position = position
     self.scene = scene
 
-    shape = SKShapeNode(circleOfRadius: 4)
+    shape = SKShapeNode(circleOfRadius: 6)
     shape.fillColor = SKColor.orange
     shape.strokeColor = SKColor.clear
     shape.position = CGPoint(x: position.x, y: position.y)
     scene.addChild(shape)
+
+    draw()
   }
 
   func apply(force: CGVector) {
@@ -58,7 +60,8 @@ class Particle {
   }
 
   func draw() {
-    shape.position = CGPoint(x: position.x, y: 700 - position.y)
+    shape.position = position
+    shape.fillColor = immobile ? SKColor.green : SKColor.orange
   }
 }
 
@@ -107,6 +110,8 @@ class Spring {
     shape.strokeColor = NSColor.init(white: 1, alpha: 0.5)
     shape.lineWidth = 2
     scene.addChild(shape)
+
+    draw()
   }
 
   func apply() {
@@ -123,7 +128,7 @@ class Spring {
   }
 
   func draw() {
-    let path = creatPath(for: [CGPoint(x: a.position.x, y: 700 - a.position.y), CGPoint(x: b.position.x, y: 700 - b.position.y)])
+    let path = creatPath(for: [a.position, b.position])
     shape.path = path
   }
 }
@@ -152,6 +157,10 @@ extension TimeInterval {
 extension CGPoint {
   func add(vector: CGVector) -> CGPoint {
     return CGPoint(x: self.x + vector.dx, y: self.y + vector.dy)
+  }
+
+  func add(point: CGPoint) -> CGPoint {
+    return CGPoint(x: self.x + point.x, y: self.y + point.y)
   }
 
   func subtract(point: CGPoint) -> CGPoint {
@@ -200,17 +209,17 @@ extension CGVector {
   var steps: Double = 0
   var scene: SKScene
   var draggingParticle: Particle? = nil
-  var draggingOrigin: CGPoint? = nil
-  var draggingOriginLocal: CGPoint? = nil
+  var dragOrigin: CGPoint? = nil
 
   init(window: NSWindow, scene: SKScene) {
     self.window = window
     self.scene = scene
-    
+
     particles = (0..<GRID_HEIGHT).map { y in
       return (0..<GRID_WIDTH).map { x in
-        let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size)
-        return Particle(position: position, scene: scene)
+        let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size).add(point: window.frame.origin)
+        let p = Particle(position: position, scene: scene)
+        return p
       }
     }
 
@@ -253,61 +262,41 @@ extension CGVector {
   }
 
   @objc public func startDrag(at point: CGPoint) {
-    draggingOrigin = point
-    var point = window.convertFromScreen(NSRect(origin: point, size: CGSize.zero)).origin
-    point =  CGPoint(x: point.x, y: window.frame.height - point.y)
-    draggingOriginLocal = point
-    let normalizingPoint = particles[0][0].position
-
     let closestParticle = particles.reduce((particle: particles[0][0], distance: CGFloat.greatestFiniteMagnitude)) { (result, particles) in
       let closestParticle = particles.reduce((particle: self.particles[0][0], distance: CGFloat.greatestFiniteMagnitude)) { (result, particle) in
-        let distance = particle.position.subtract(point: normalizingPoint).distanceTo(point: point)
-
-        if result.distance < distance {
-          return result
-        }
-
-        return (particle: particle, distance: distance)
+        let distance = particle.position.distanceTo(point: point)
+        return result.distance < distance ? result : (particle: particle, distance: distance)
       }
-
-      if result.distance < closestParticle.distance {
-        return result
-      }
-
-      return closestParticle
+      return result.distance < closestParticle.distance ? result : closestParticle
     }
 
     draggingParticle = closestParticle.particle
+    dragOrigin = closestParticle.particle.position.subtract(point: point)
+
     closestParticle.particle.immobile = true
   }
 
   @objc public func drag(at point: CGPoint) {
-    var point = point.subtract(point: draggingOrigin!)
-    point =  CGPoint(x: point.x, y: window.frame.height - point.y)
-
+    var point = point.add(point: dragOrigin!)
     draggingParticle?.position = point
   }
 
   @objc public func endDrag() {
     draggingParticle?.immobile = false
     draggingParticle = nil
-    draggingOrigin = nil
-    draggingOriginLocal = nil
+    dragOrigin = nil
   }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
     let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size)
-    let particle = particles[y][x]
+    let particle = particles[(GRID_HEIGHT - 1) - y][x]
 
-    let normal = (draggingParticle?.position ?? particles[0][0].position).subtract(point: CGPoint(x: draggingOriginLocal!.x, y:0))
-
-    let cid = _CGSDefaultConnection();
-    var rect = CGRect()
-    CGSGetWindowBounds(cid, CGSWindow(window.windowNumber), &rect) // FIXME: Inefficient to call for every particle!
+    var windowFrame = window.frame
+    windowFrame.origin.y = window.screen!.frame.height - window.frame.origin.y
 
     return CGPointWarp(
       local: MeshPoint(x: Float(position.x), y: Float(position.y)),
-      global: MeshPoint(x: Float(rect.origin.x + (particle.position.x - normal.x)), y: Float(rect.origin.y + (particle.position.y - normal.y)))
+      global: MeshPoint(x: Float(particle.position.x), y: Float(window.screen!.frame.height - particle.position.y))
     )
   }
 }

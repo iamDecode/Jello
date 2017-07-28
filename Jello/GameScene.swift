@@ -16,6 +16,7 @@ class GameScene: SKScene {
   var warp: Warp? = nil
 
   override func didMove(to view: SKView) {
+    anchorPoint = CGPoint(x: 0, y: 0)
 
     // Get label node from scene and store it for use later
     self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
