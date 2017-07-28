@@ -58,7 +58,7 @@ class Particle {
   }
 
   func draw() {
-    shape.position = CGPoint(x: position.x, y: position.y)
+    shape.position = CGPoint(x: position.x, y: 700 - position.y)
   }
 }
 
@@ -123,7 +123,7 @@ class Spring {
   }
 
   func draw() {
-    let path = creatPath(for: [a.position, b.position])
+    let path = creatPath(for: [CGPoint(x: a.position.x, y: 700 - a.position.y), CGPoint(x: b.position.x, y: 700 - b.position.y)])
     shape.path = path
   }
 }
@@ -137,10 +137,10 @@ extension Collection where Element == Spring {
 }
 
 
-private var GRID_WIDTH = 4
-private var GRID_HEIGHT = 4
-private var springK: CGFloat = 8
-private var friction: CGFloat = 2
+private var GRID_WIDTH = 8
+private var GRID_HEIGHT = 8
+private var springK: CGFloat = 12
+private var friction: CGFloat = 1
 
 extension TimeInterval {
   var milliseconds: Double {
@@ -152,6 +152,10 @@ extension TimeInterval {
 extension CGPoint {
   func add(vector: CGVector) -> CGPoint {
     return CGPoint(x: self.x + vector.dx, y: self.y + vector.dy)
+  }
+
+  func subtract(point: CGPoint) -> CGPoint {
+    return CGPoint(x: self.x - point.x, y: self.y - point.y)
   }
 
   func distanceTo(point: CGPoint) -> CGFloat {
@@ -188,12 +192,16 @@ extension CGVector {
 }
 
 
-class Warp {
+
+@objc class Warp: NSObject {
   var window: NSWindow
   var particles: [[Particle]]
   var springs = [Spring]()
   var steps: Double = 0
   var scene: SKScene
+  var draggingParticle: Particle? = nil
+  var draggingOrigin: CGPoint? = nil
+  var draggingOriginLocal: CGPoint? = nil
 
   init(window: NSWindow, scene: SKScene) {
     self.window = window
@@ -229,7 +237,7 @@ class Warp {
     }
   }
 
-  func step(delta: TimeInterval) {
+  @objc func step(delta: TimeInterval) {
     self.steps += delta.milliseconds / 15
     let steps = floor(self.steps)
     self.steps -= steps
@@ -240,7 +248,66 @@ class Warp {
 
     for _ in 0..<Int(steps) {
       springs.apply()
-      particles.step()
+      _ = particles.step()
     }
+  }
+
+  @objc public func startDrag(at point: CGPoint) {
+    draggingOrigin = point
+    var point = window.convertFromScreen(NSRect(origin: point, size: CGSize.zero)).origin
+    point =  CGPoint(x: point.x, y: window.frame.height - point.y)
+    draggingOriginLocal = point
+    let normalizingPoint = particles[0][0].position
+
+    let closestParticle = particles.reduce((particle: particles[0][0], distance: CGFloat.greatestFiniteMagnitude)) { (result, particles) in
+      let closestParticle = particles.reduce((particle: self.particles[0][0], distance: CGFloat.greatestFiniteMagnitude)) { (result, particle) in
+        let distance = particle.position.subtract(point: normalizingPoint).distanceTo(point: point)
+
+        if result.distance < distance {
+          return result
+        }
+
+        return (particle: particle, distance: distance)
+      }
+
+      if result.distance < closestParticle.distance {
+        return result
+      }
+
+      return closestParticle
+    }
+
+    draggingParticle = closestParticle.particle
+    closestParticle.particle.immobile = true
+  }
+
+  @objc public func drag(at point: CGPoint) {
+    var point = point.subtract(point: draggingOrigin!)
+    point =  CGPoint(x: point.x, y: window.frame.height - point.y)
+
+    draggingParticle?.position = point
+  }
+
+  @objc public func endDrag() {
+    draggingParticle?.immobile = false
+    draggingParticle = nil
+    draggingOrigin = nil
+    draggingOriginLocal = nil
+  }
+
+  @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
+    let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size)
+    let particle = particles[y][x]
+
+    let normal = (draggingParticle?.position ?? particles[0][0].position).subtract(point: CGPoint(x: draggingOriginLocal!.x, y:0))
+
+    let cid = _CGSDefaultConnection();
+    var rect = CGRect()
+    CGSGetWindowBounds(cid, CGSWindow(window.windowNumber), &rect) // FIXME: Inefficient to call for every particle!
+
+    return CGPointWarp(
+      local: MeshPoint(x: Float(position.x), y: Float(position.y)),
+      global: MeshPoint(x: Float(rect.origin.x + (particle.position.x - normal.x)), y: Float(rect.origin.y + (particle.position.y - normal.y)))
+    )
   }
 }

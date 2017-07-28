@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B419A4181F2B2C3A00FECC47 /* SBSWindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* SBSWindowAdditions.h */; };
+		B419A4191F2B2C3A00FECC47 /* SBSWindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* SBSWindowAdditions.mm */; };
 		B47DE14E1F23FB4300DE9C65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE14D1F23FB4300DE9C65 /* AppDelegate.swift */; };
 		B47DE1501F23FB4300DE9C65 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = B47DE14F1F23FB4300DE9C65 /* GameScene.sks */; };
 		B47DE1521F23FB4300DE9C65 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = B47DE1511F23FB4300DE9C65 /* Actions.sks */; };
@@ -43,6 +45,9 @@
 		B47DE1661F23FB4300DE9C65 /* JelloTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JelloTests.swift; sourceTree = "<group>"; };
 		B47DE1681F23FB4300DE9C65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B47DE1711F23FB8D00DE9C65 /* Warp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Warp.swift; sourceTree = "<group>"; };
+		B4D504941F292493001B8C1D /* SBSWindowAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SBSWindowAdditions.h; sourceTree = "<group>"; };
+		B4D504951F292493001B8C1D /* SBSWindowAdditions.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SBSWindowAdditions.mm; sourceTree = "<group>"; };
+		B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jello-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +99,9 @@
 				B47DE15C1F23FB4300DE9C65 /* Info.plist */,
 				B47DE15D1F23FB4300DE9C65 /* Jello.entitlements */,
 				B47DE1711F23FB8D00DE9C65 /* Warp.swift */,
+				B4D504941F292493001B8C1D /* SBSWindowAdditions.h */,
+				B4D504951F292493001B8C1D /* SBSWindowAdditions.mm */,
+				B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */,
 			);
 			path = Jello;
 			sourceTree = "<group>";
@@ -157,6 +165,7 @@
 				TargetAttributes = {
 					B47DE1491F23FB4300DE9C65 = {
 						CreatedOnToolsVersion = 9.0;
+						LastSwiftMigration = 0900;
 					};
 					B47DE1611F23FB4300DE9C65 = {
 						CreatedOnToolsVersion = 9.0;
@@ -213,6 +222,8 @@
 				B47DE1541F23FB4300DE9C65 /* GameScene.swift in Sources */,
 				B47DE14E1F23FB4300DE9C65 /* AppDelegate.swift in Sources */,
 				B47DE1721F23FB8D00DE9C65 /* Warp.swift in Sources */,
+				B419A4181F2B2C3A00FECC47 /* SBSWindowAdditions.h in Sources */,
+				B419A4191F2B2C3A00FECC47 /* SBSWindowAdditions.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +367,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Jello/Jello.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = P2BY58D85Z;
@@ -363,6 +375,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.collaris.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Jello-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -371,6 +385,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Jello/Jello.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = P2BY58D85Z;
@@ -378,6 +393,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.collaris.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Jello-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
@@ -433,6 +449,7 @@
 				B47DE16D1F23FB4300DE9C65 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B47DE16E1F23FB4300DE9C65 /* Build configuration list for PBXNativeTarget "JelloTests" */ = {
 			isa = XCConfigurationList;
@@ -441,6 +458,7 @@
 				B47DE1701F23FB4300DE9C65 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
