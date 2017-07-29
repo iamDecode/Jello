@@ -16,8 +16,7 @@ class Particle {
   var force = CGVector(dx: 0, dy: 0)
   var velocity = CGVector(dx: 0, dy: 0)
 
-  var theta: CGFloat = 0
-  var immobile: Bool = false
+  var immobile = false
   var mass: CGFloat = 15
 
   var shape: SKShapeNode
@@ -114,6 +113,10 @@ class Spring {
     draw()
   }
 
+  deinit {
+   shape.removeFromParent()
+  }
+
   func apply() {
     let pa = a.position
     let pb = b.position
@@ -128,8 +131,8 @@ class Spring {
   }
 
   func draw() {
-//    let path = creatPath(for: [a.position, b.position])
-//    shape.path = path
+    let path = creatPath(for: [a.position, b.position])
+    shape.path = path
   }
 }
 
@@ -244,6 +247,10 @@ extension CGVector {
         }
       }
     }
+
+    super.init()
+
+    NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
   }
 
   @objc func step(delta: TimeInterval) {
@@ -259,6 +266,44 @@ extension CGVector {
     for _ in 0..<Int(steps) {
       springs.apply()
       _ = particles.step()
+    }
+  }
+
+  @objc func didResize(notification: NSNotification) {
+    guard let window = notification.object as? NSWindow,
+          window == self.window else { return }
+
+    for y in 0..<GRID_HEIGHT {
+      for x in 0..<GRID_WIDTH {
+        let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size).add(point: window.frame.origin)
+        particles[y][x].position = position
+        particles[y][x].draw()
+      }
+    }
+
+    // TODO: update offsets rather than recompute them.
+    springs = []
+
+    for y in 0..<GRID_HEIGHT {
+      for x in 0..<GRID_WIDTH {
+        if x > 0 {
+          springs.append(Spring(
+            a: particles[y][x - 1],
+            b: particles[y][x],
+            offset: CGVector(dx: 1, dy: 0).normalized.multiply(size: window.frame.size),
+            scene: scene
+          ))
+        }
+
+        if y > 0 {
+          springs.append(Spring(
+            a: particles[y-1][x],
+            b: particles[y][x],
+            offset: CGVector(dx: 0, dy: 1).normalized.multiply(size: window.frame.size),
+            scene: scene
+          ))
+        }
+      }
     }
   }
 
@@ -278,7 +323,7 @@ extension CGVector {
   }
 
   @objc public func drag(at point: CGPoint) {
-    var point = point.add(point: dragOrigin!)
+    let point = point.add(point: dragOrigin!)
     draggingParticle?.position = point
   }
 
