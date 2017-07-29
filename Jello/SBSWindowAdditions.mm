@@ -276,14 +276,14 @@ NSTimeInterval previousUpdate = 0.0;
     [window.warp endDrag];
   } else {
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
-    if (timestamp - previousUpdate < 0.02) {
+    if (timestamp - previousUpdate < 0.01) {
       return;
     } else {
       previousUpdate = timestamp;
     }
 
     [window.warp dragAt:NSEvent.mouseLocation];
-    [self.warp stepWithDelta:0.07];
+    [self.warp stepWithDelta:0.04];
 
     CGSConnection cid = _CGSDefaultConnection();
     CGPointWarp mesh[8][8] = {

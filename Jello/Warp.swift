@@ -285,6 +285,9 @@ extension CGVector {
     draggingParticle?.immobile = false
     draggingParticle = nil
     dragOrigin = nil
+
+    let particle = particles[0][0]
+    window.setFrameOrigin(NSPoint(x: particle.position.x, y: particle.position.y))
   }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
