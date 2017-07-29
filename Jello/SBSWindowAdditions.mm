@@ -278,27 +278,28 @@ NSTimeInterval previousUpdate = 0.0;
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
     if (timestamp - previousUpdate < 0.01) {
       return;
-    } else {
-      previousUpdate = timestamp;
     }
 
+    float diff = timestamp - previousUpdate;
+
     [window.warp dragAt:NSEvent.mouseLocation];
-    [self.warp stepWithDelta:0.04];
+    [self.warp stepWithDelta: diff];
 
     CGSConnection cid = _CGSDefaultConnection();
-    CGPointWarp mesh[8][8] = {
-      { [self.warp meshPointWithX:0 y:0], [self.warp meshPointWithX:1 y:0], [self.warp meshPointWithX:2 y:0], [self.warp meshPointWithX:3 y:0], [self.warp meshPointWithX:4 y:0], [self.warp meshPointWithX:5 y:0], [self.warp meshPointWithX:6 y:0], [self.warp meshPointWithX:7 y:0] },
-      { [self.warp meshPointWithX:0 y:1], [self.warp meshPointWithX:1 y:1], [self.warp meshPointWithX:2 y:1], [self.warp meshPointWithX:3 y:1], [self.warp meshPointWithX:4 y:1], [self.warp meshPointWithX:5 y:1], [self.warp meshPointWithX:6 y:1], [self.warp meshPointWithX:7 y:1] },
-      { [self.warp meshPointWithX:0 y:2], [self.warp meshPointWithX:1 y:2], [self.warp meshPointWithX:2 y:2], [self.warp meshPointWithX:3 y:2], [self.warp meshPointWithX:4 y:2], [self.warp meshPointWithX:5 y:2], [self.warp meshPointWithX:6 y:2], [self.warp meshPointWithX:7 y:2] },
-      { [self.warp meshPointWithX:0 y:3], [self.warp meshPointWithX:1 y:3], [self.warp meshPointWithX:2 y:3], [self.warp meshPointWithX:3 y:3], [self.warp meshPointWithX:4 y:3], [self.warp meshPointWithX:5 y:3], [self.warp meshPointWithX:6 y:3], [self.warp meshPointWithX:7 y:3] },
-      { [self.warp meshPointWithX:0 y:4], [self.warp meshPointWithX:1 y:4], [self.warp meshPointWithX:2 y:4], [self.warp meshPointWithX:3 y:4], [self.warp meshPointWithX:4 y:4], [self.warp meshPointWithX:5 y:4], [self.warp meshPointWithX:6 y:4], [self.warp meshPointWithX:7 y:4] },
-      { [self.warp meshPointWithX:0 y:5], [self.warp meshPointWithX:1 y:5], [self.warp meshPointWithX:2 y:5], [self.warp meshPointWithX:3 y:5], [self.warp meshPointWithX:4 y:5], [self.warp meshPointWithX:5 y:5], [self.warp meshPointWithX:6 y:5], [self.warp meshPointWithX:7 y:5] },
-      { [self.warp meshPointWithX:0 y:6], [self.warp meshPointWithX:1 y:6], [self.warp meshPointWithX:2 y:6], [self.warp meshPointWithX:3 y:6], [self.warp meshPointWithX:4 y:6], [self.warp meshPointWithX:5 y:6], [self.warp meshPointWithX:6 y:6], [self.warp meshPointWithX:7 y:6] },
-      { [self.warp meshPointWithX:0 y:7], [self.warp meshPointWithX:1 y:7], [self.warp meshPointWithX:2 y:7], [self.warp meshPointWithX:3 y:7], [self.warp meshPointWithX:4 y:7], [self.warp meshPointWithX:5 y:7], [self.warp meshPointWithX:6 y:7], [self.warp meshPointWithX:7 y:7] }
-    };
-    CGSSetWindowWarp(cid, [window windowNumber], 8, 8, &(mesh[0][0]));
+    // normal grid
+    int GRID_WIDTH = 8;
+    int GRID_HEIGHT = 8;
+    CGPointWarp mesh[GRID_HEIGHT][GRID_WIDTH];
+    for (int y = 0; y < GRID_HEIGHT; y++) {
+      for (int x = 0; x < GRID_WIDTH; x++) {
+        mesh[y][x] = [self.warp meshPointWithX:x y:y];
+      }
+    }
+
+    CGSSetWindowWarp(cid, [window windowNumber], GRID_WIDTH, GRID_HEIGHT, &(mesh[0][0]));
 
     //[NSThread sleepForTimeInterval:0.01f]; // limit to max 33 fps
+    previousUpdate = timestamp;
   }
 }
 

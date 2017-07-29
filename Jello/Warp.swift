@@ -128,8 +128,8 @@ class Spring {
   }
 
   func draw() {
-    let path = creatPath(for: [a.position, b.position])
-    shape.path = path
+//    let path = creatPath(for: [a.position, b.position])
+//    shape.path = path
   }
 }
 
@@ -144,8 +144,8 @@ extension Collection where Element == Spring {
 
 private var GRID_WIDTH = 8
 private var GRID_HEIGHT = 8
-private var springK: CGFloat = 12
-private var friction: CGFloat = 1
+private var springK: CGFloat = 8
+private var friction: CGFloat = 0.8
 
 extension TimeInterval {
   var milliseconds: Double {
@@ -247,7 +247,8 @@ extension CGVector {
   }
 
   @objc func step(delta: TimeInterval) {
-    self.steps += delta.milliseconds / 15
+    if delta > 0.5 { return }
+    self.steps += delta.milliseconds / 3
     let steps = floor(self.steps)
     self.steps -= steps
 
