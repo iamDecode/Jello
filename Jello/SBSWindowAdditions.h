@@ -57,7 +57,7 @@ static NSPoint gWindowTrackingEventOrigin, gWindowTrackingCurrentWindowOrigin;
 @class Warp;
 
 @interface NSWindow (SBSWindowAdditions)
-@property (retain, nonatomic) Warp *warp;
+@property (weak, nonatomic) Warp *warp;
 
 - (void) drawWarp;
 - (void) clearWarp;
