@@ -272,7 +272,6 @@ NSTimeInterval previousUpdate = 0.0;
     gWindowTracking = NO;                  // checking for an NSLeftMouseUp event that would indicate the end
                                            // of the dragging and set the looping condition accordingly.
                                            // MUY IMPORTANTE: we have to do this on the main thread!!!
-    ClearWindowWarp(window);
     [window.warp endDrag];
   } else {
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
@@ -285,22 +284,31 @@ NSTimeInterval previousUpdate = 0.0;
     [window.warp dragAt:NSEvent.mouseLocation];
     [self.warp stepWithDelta: diff];
 
-    CGSConnection cid = _CGSDefaultConnection();
-    // normal grid
-    int GRID_WIDTH = 8;
-    int GRID_HEIGHT = 8;
-    CGPointWarp mesh[GRID_HEIGHT][GRID_WIDTH];
-    for (int y = 0; y < GRID_HEIGHT; y++) {
-      for (int x = 0; x < GRID_WIDTH; x++) {
-        mesh[y][x] = [self.warp meshPointWithX:x y:y];
-      }
-    }
-
-    CGSSetWindowWarp(cid, [window windowNumber], GRID_WIDTH, GRID_HEIGHT, &(mesh[0][0]));
+    [self drawWarp];
 
     //[NSThread sleepForTimeInterval:0.01f]; // limit to max 33 fps
     previousUpdate = timestamp;
   }
+}
+
+- (void) drawWarp {
+  CGSConnection cid = _CGSDefaultConnection();
+
+  // normal grid
+  int GRID_WIDTH = 8;
+  int GRID_HEIGHT = 8;
+  CGPointWarp mesh[GRID_HEIGHT][GRID_WIDTH];
+  for (int y = 0; y < GRID_HEIGHT; y++) {
+    for (int x = 0; x < GRID_WIDTH; x++) {
+      mesh[y][x] = [self.warp meshPointWithX:x y:y];
+    }
+  }
+
+  CGSSetWindowWarp(cid, self.windowNumber, GRID_WIDTH, GRID_HEIGHT, &(mesh[0][0]));
+}
+
+- (void) clearWarp {
+  ClearWindowWarp(self);
 }
 
 

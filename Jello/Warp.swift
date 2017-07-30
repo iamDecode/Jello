@@ -51,6 +51,17 @@ class Particle {
     velocity = velocity.add(vector: force.scale(by: CGFloat(1) / mass))
     position = position.add(vector: velocity) // Euler
 
+    let taskbarHeight: CGFloat = 22.0
+    if position.y > (scene.frame.height - taskbarHeight) {
+      position.y = (scene.frame.height - taskbarHeight)
+      force.dy *= -1
+      velocity.dy *= -1
+    } /*else if position.y < 0 {
+      position.y = 0
+      force.dy *= -1
+      velocity.dy *= -1
+    }*/
+
     let ret = (velocity: abs(velocity.dx) + abs(velocity.dy), force: abs(force.dx) + abs(force.dy))
 
     force = CGVector.zero
@@ -213,6 +224,7 @@ extension CGVector {
   var scene: SKScene
   var draggingParticle: Particle? = nil
   var dragOrigin: CGPoint? = nil
+  var timer: Timer? = nil
 
   init(window: NSWindow, scene: SKScene) {
     self.window = window
@@ -263,9 +275,22 @@ extension CGVector {
       return
     }
 
+    var result: StepResult!
     for _ in 0..<Int(steps) {
       springs.apply()
-      _ = particles.step()
+      result = particles.step()
+    }
+
+    if let timer = timer, result.force < 20 { // TODO: make configurable maybe
+      timer.invalidate()
+      self.timer = nil
+      draggingParticle = nil
+      dragOrigin = nil
+
+      let particle = particles[0][0]
+      window.setFrameOrigin(NSPoint(x: particle.position.x, y: particle.position.y))
+
+      window.clearWarp()
     }
   }
 
@@ -323,17 +348,19 @@ extension CGVector {
   }
 
   @objc public func drag(at point: CGPoint) {
-    let point = point.add(point: dragOrigin!)
-    draggingParticle?.position = point
+    if let dragOrigin = dragOrigin {
+      let point = point.add(point: dragOrigin)
+      draggingParticle?.position = point
+    }
   }
 
   @objc public func endDrag() {
     draggingParticle?.immobile = false
-    draggingParticle = nil
-    dragOrigin = nil
 
-    let particle = particles[0][0]
-    window.setFrameOrigin(NSPoint(x: particle.position.x, y: particle.position.y))
+    timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { (timer) in
+      self.window.drawWarp()
+      self.step(delta: 0.01)
+    }
   }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {

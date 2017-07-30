@@ -59,6 +59,8 @@ static NSPoint gWindowTrackingEventOrigin, gWindowTrackingCurrentWindowOrigin;
 @interface NSWindow (SBSWindowAdditions)
 @property (retain, nonatomic) Warp *warp;
 
+- (void) drawWarp;
+- (void) clearWarp;
 + (void) setLiveFrameTracking:(BOOL) bol;
 + (BOOL) isLiveFrameTracking;
 
