@@ -39,7 +39,7 @@ class Particle {
     self.force = self.force.add(vector: force)
   }
 
-  func step() -> StepResult {
+  func step(height: CGFloat) -> StepResult {
     guard !immobile else {
       velocity = CGVector.zero
       force = CGVector.zero
@@ -52,8 +52,8 @@ class Particle {
     position = position.add(vector: velocity) // Euler
 
     let taskbarHeight: CGFloat = 22.0
-    if position.y > (scene.frame.height - taskbarHeight) {
-      position.y = (scene.frame.height - taskbarHeight)
+    if position.y > (height - taskbarHeight) {
+      position.y = (height - taskbarHeight)
       force.dy *= -1
       velocity.dy *= -1
     } /*else if position.y < 0 {
@@ -76,13 +76,13 @@ class Particle {
 }
 
 extension Collection where Element == [Particle] {
-  func step() -> StepResult {
+  func step(height: CGFloat) -> StepResult {
     var ret: StepResult = (velocity: 0, force: 0)
 
     for particles in self {
       for particle in particles {
         particle.draw()
-        let tuple = particle.step()
+        let tuple = particle.step(height: height)
         ret.velocity += tuple.velocity
         ret.force += tuple.force
       }
@@ -225,6 +225,8 @@ extension CGVector {
   var draggingParticle: Particle? = nil
   var dragOrigin: CGPoint? = nil
   var timer: Timer? = nil
+  var screenHeight: CGFloat
+  var lastResult: StepResult?
 
   init(window: NSWindow, scene: SKScene) {
     self.window = window
@@ -260,6 +262,8 @@ extension CGVector {
       }
     }
 
+    screenHeight = NSScreen.main!.frame.height
+    
     super.init()
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
@@ -275,13 +279,12 @@ extension CGVector {
       return
     }
 
-    var result: StepResult!
     for _ in 0..<Int(steps) {
       springs.apply()
-      result = particles.step()
+      lastResult = particles.step(height: screenHeight)
     }
 
-    if let timer = timer, result.force < 20 { // TODO: make configurable maybe
+    if let timer = timer, let lastResult = lastResult, lastResult.force < 20 { // TODO: make configurable maybe
       timer.invalidate()
       self.timer = nil
       draggingParticle = nil
@@ -367,12 +370,17 @@ extension CGVector {
     let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size)
     let particle = particles[(GRID_HEIGHT - 1) - y][x]
 
-    var windowFrame = window.frame
-    windowFrame.origin.y = window.screen!.frame.height - window.frame.origin.y
-
     return CGPointWarp(
       local: MeshPoint(x: Float(position.x), y: Float(position.y)),
-      global: MeshPoint(x: Float(particle.position.x), y: Float(window.screen!.frame.height - particle.position.y))
+      global: MeshPoint(x: Float(round(particle.position.x)), y: Float(screenHeight - round(particle.position.y)))
     )
+  }
+
+  @objc var velocity: CGFloat {
+    return lastResult?.velocity ?? 0
+  }
+
+  @objc var force: CGFloat {
+    return lastResult?.force ?? 0
   }
 }

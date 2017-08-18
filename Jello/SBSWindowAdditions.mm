@@ -284,7 +284,11 @@ NSTimeInterval previousUpdate = 0.0;
     [window.warp dragAt:NSEvent.mouseLocation];
     [self.warp stepWithDelta: diff];
 
-    [self drawWarp];
+    if (window.warp.force < 20.0f) {
+      [self clearWarp];
+    } else {
+      [self drawWarp];
+    }
 
     //[NSThread sleepForTimeInterval:0.01f]; // limit to max 33 fps
     previousUpdate = timestamp;
