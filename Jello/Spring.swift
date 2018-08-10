@@ -9,9 +9,9 @@
 class Spring {
   var a: Particle
   var b: Particle
-  var offset: CGVector
+  var offset: CGPoint
 
-  init(a: Particle, b: Particle, offset: CGVector) {
+  init(a: Particle, b: Particle, offset: CGPoint) {
     self.a = a
     self.b = b
     self.offset = offset
@@ -21,8 +21,8 @@ class Spring {
     let pa = a.position
     let pb = b.position
 
-    let da = CGVector(dx: springK * 0.5 * (pb.x - pa.x - offset.dx), dy: springK * 0.5 * (pb.y - pa.y - offset.dy))
-    let db = CGVector(dx: springK * 0.5 * (pa.x - pb.x + offset.dx), dy: springK * 0.5 * (pa.y - pb.y + offset.dy))
+    let da = CGVector(dx: springK * 0.5 * (pb.x - pa.x - offset.x), dy: springK * 0.5 * (pb.y - pa.y - offset.y))
+    let db = CGVector(dx: springK * 0.5 * (pa.x - pb.x + offset.x), dy: springK * 0.5 * (pa.y - pb.y + offset.y))
 
     a.apply(force: da)
     b.apply(force: db)
@@ -41,7 +41,7 @@ class SKSpring: Spring {
   var shape: SKShapeNode
   var scene: SKScene
 
-  init(a: Particle, b: Particle, offset: CGVector, scene: SKScene) {
+  init(a: Particle, b: Particle, offset: CGPoint, scene: SKScene) {
     self.scene = scene
 
     shape = SKShapeNode()

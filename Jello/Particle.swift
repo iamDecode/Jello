@@ -12,6 +12,9 @@ class Particle {
   var position: CGPoint
   var force = CGVector(dx: 0, dy: 0)
   var velocity = CGVector(dx: 0, dy: 0)
+  var acceleration: CGVector {
+    get { return force / mass }
+  }
 
   var immobile = false
   var mass: CGFloat = 15
@@ -21,7 +24,7 @@ class Particle {
   }
 
   func apply(force: CGVector) {
-    self.force = self.force.add(vector: force)
+    self.force += force
   }
 
   func step(height: CGFloat) -> StepResult {
@@ -32,9 +35,9 @@ class Particle {
       return (velocity: 0, force: 0)
     }
 
-    force = force.subtract(vector: velocity.scale(by: friction))
-    velocity = velocity.add(vector: force.scale(by: CGFloat(1) / mass))
-    position = position.add(vector: velocity) // Euler
+    force -= velocity * friction
+    velocity += force / mass
+    position += velocity // Euler
 
     if position.y > height - titleBarHeight {
       position.y = height - titleBarHeight

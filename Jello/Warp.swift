@@ -19,10 +19,11 @@ public func createPath (for points:[CGPoint]) -> CGMutablePath {
 
 internal var GRID_WIDTH = 8
 internal var GRID_HEIGHT = 8
-internal var springK: CGFloat = 5
-internal var friction: CGFloat = 0.8
+internal var springK: CGFloat = 8
+internal var friction: CGFloat = 2
 internal let titleBarHeight: CGFloat = 23
 
+// PROBLEM OCCURS WHEN YOU DRAG A WINDOW BEFORE IT EVEN STOPPED ANIMATING!
 
 @objc class Warp: NSObject {
   var window: NSWindow
@@ -42,7 +43,7 @@ internal let titleBarHeight: CGFloat = 23
 
     particles = (0..<GRID_HEIGHT).map { y in
       return (0..<GRID_WIDTH).map { x in
-        let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size).add(point: window.frame.origin)
+        let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
         return SKParticle(position: position, scene: scene)
       }
     }
@@ -53,7 +54,7 @@ internal let titleBarHeight: CGFloat = 23
           springs.append(SKSpring(
             a: particles[y][x - 1],
             b: particles[y][x],
-            offset: CGVector(dx: 1, dy: 0).normalized.multiply(size: window.frame.size),
+            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
             scene: scene
           ))
         }
@@ -62,7 +63,7 @@ internal let titleBarHeight: CGFloat = 23
           springs.append(SKSpring(
             a: particles[y-1][x],
             b: particles[y][x],
-            offset: CGVector(dx: 0, dy: 1).normalized.multiply(size: window.frame.size),
+            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
             scene: scene
           ))
         }
@@ -78,7 +79,7 @@ internal let titleBarHeight: CGFloat = 23
 
   @objc func step(delta: TimeInterval) {
     if delta > 0.5 { return }
-    self.steps += delta.milliseconds / 4
+    self.steps += delta.milliseconds / 3
     let steps = floor(self.steps)
     self.steps -= steps
 
@@ -110,7 +111,7 @@ internal let titleBarHeight: CGFloat = 23
 
     for y in 0..<GRID_HEIGHT {
       for x in 0..<GRID_WIDTH {
-        let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size).add(point: window.frame.origin)
+        let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
         particles[y][x].position = position
         particles[y][x].draw()
       }
@@ -125,7 +126,7 @@ internal let titleBarHeight: CGFloat = 23
           springs.append(SKSpring(
             a: particles[y][x - 1],
             b: particles[y][x],
-            offset: CGVector(dx: 1, dy: 0).normalized.multiply(size: window.frame.size),
+            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
             scene: scene
           ))
         }
@@ -134,7 +135,7 @@ internal let titleBarHeight: CGFloat = 23
           springs.append(SKSpring(
             a: particles[y-1][x],
             b: particles[y][x],
-            offset: CGVector(dx: 0, dy: 1).normalized.multiply(size: window.frame.size),
+            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
             scene: scene
           ))
         }
@@ -152,14 +153,14 @@ internal let titleBarHeight: CGFloat = 23
     }
 
     draggingParticle = closestParticle.particle
-    dragOrigin = closestParticle.particle.position.subtract(point: point)
+    dragOrigin = closestParticle.particle.position - point
 
     closestParticle.particle.immobile = true
   }
 
   @objc public func drag(at point: CGPoint) {
     if let dragOrigin = dragOrigin {
-      let point = point.add(point: dragOrigin)
+      let point = point + dragOrigin
       draggingParticle?.position = point
     }
   }
@@ -174,7 +175,7 @@ internal let titleBarHeight: CGFloat = 23
   }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
-    let position: CGPoint = CGVector(dx: x, dy: y).normalized.multiply(size: window.frame.size)
+    let position: CGPoint = CGVector(dx: x, dy: y).normalized * window.frame.size
     let particle = particles[(GRID_HEIGHT - 1) - y][x]
 
     var windowFrame = window.frame
