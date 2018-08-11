@@ -25,46 +25,51 @@ internal let titleBarHeight: CGFloat = 23
 
 // PROBLEM OCCURS WHEN YOU DRAG A WINDOW BEFORE IT EVEN STOPPED ANIMATING!
 
+internal func convert(toPosition i: Int) -> (Int, Int) {
+  return (i % GRID_WIDTH, i.unsafeDivided(by: GRID_WIDTH))
+}
+
+internal func convert(toIndex x: Int, y: Int) -> Int {
+  return (y * GRID_WIDTH) + x
+}
+
 @objc class Warp: NSObject {
   var window: NSWindow
-  var particles: [[SKParticle]]
-  var springs = [SKSpring]()
+  var particles: [Particle]
+  var springs = [Spring]()
   var steps: Double = 0
   var scene: SKScene
-  var draggingParticle: SKParticle? = nil
+  var draggingParticle: Int? = nil
   var dragOrigin: CGPoint? = nil
   var timer: Timer? = nil
   var screenHeight: CGFloat
-  var lastResult: StepResult?
-
+  var solver: Solver!
+  
   init(window: NSWindow, scene: SKScene) {
     self.window = window
     self.scene = scene
-
-    particles = (0..<GRID_HEIGHT).map { y in
-      return (0..<GRID_WIDTH).map { x in
-        let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
-        return SKParticle(position: position, scene: scene)
-      }
+    
+    particles = (0 ..< (GRID_WIDTH * GRID_HEIGHT)).map { i in
+      let (x, y) = convert(toPosition: i)
+      let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
+      return Particle(position: position)
     }
 
     for y in 0..<GRID_HEIGHT {
       for x in 0..<GRID_WIDTH {
         if x > 0 {
-          springs.append(SKSpring(
-            a: particles[y][x - 1],
-            b: particles[y][x],
-            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
-            scene: scene
+          springs.append(Spring(
+            a: convert(toIndex: x - 1, y: y),
+            b: convert(toIndex: x, y: y),
+            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size
           ))
         }
 
         if y > 0 {
-          springs.append(SKSpring(
-            a: particles[y-1][x],
-            b: particles[y][x],
-            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
-            scene: scene
+          springs.append(Spring(
+            a: convert(toIndex: x, y: y - 1),
+            b: convert(toIndex: x, y: y),
+            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size
           ))
         }
       }
@@ -73,13 +78,15 @@ internal let titleBarHeight: CGFloat = 23
     screenHeight = NSScreen.main!.frame.height
     
     super.init()
+    
+    self.solver = Euler(warp: self)
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
   }
 
   @objc func step(delta: TimeInterval) {
     if delta > 0.5 { return }
-    self.steps += delta.milliseconds / 3
+    self.steps += delta.milliseconds * 4
     let steps = floor(self.steps)
     self.steps -= steps
 
@@ -87,18 +94,17 @@ internal let titleBarHeight: CGFloat = 23
       return
     }
 
-    for _ in 0..<Int(steps) {
-      springs.apply()
-      lastResult = particles.step(height: screenHeight)
+    for _ in 0 ..< Int(steps) {
+      solver.step(particles: &particles, stepSize: 0.01)
     }
 
-    if let timer = timer, let lastResult = lastResult, lastResult.force < 20 { // TODO: make configurable maybe
+    if let timer = timer, self.force < 200 { // TODO: make configurable maybe
       timer.invalidate()
       self.timer = nil
       draggingParticle = nil
       dragOrigin = nil
 
-      let particle = particles[0][0]
+      let particle = particles[0]
       window.setFrameOrigin(NSPoint(x: particle.position.x, y: particle.position.y))
 
       window.clearWarp()
@@ -109,12 +115,10 @@ internal let titleBarHeight: CGFloat = 23
     guard let window = notification.object as? NSWindow,
           window == self.window else { return }
 
-    for y in 0..<GRID_HEIGHT {
-      for x in 0..<GRID_WIDTH {
-        let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
-        particles[y][x].position = position
-        particles[y][x].draw()
-      }
+    for i in (0 ..< (GRID_WIDTH * GRID_HEIGHT)) {
+      let (x, y) = convert(toPosition: i)
+      let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
+      particles[i].position = position
     }
 
     // TODO: update offsets rather than recompute them.
@@ -123,20 +127,18 @@ internal let titleBarHeight: CGFloat = 23
     for y in 0..<GRID_HEIGHT {
       for x in 0..<GRID_WIDTH {
         if x > 0 {
-          springs.append(SKSpring(
-            a: particles[y][x - 1],
-            b: particles[y][x],
-            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
-            scene: scene
+          springs.append(Spring(
+            a: convert(toIndex: x - 1, y: y),
+            b: convert(toIndex: x, y: y),
+            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size
           ))
         }
 
         if y > 0 {
-          springs.append(SKSpring(
-            a: particles[y-1][x],
-            b: particles[y][x],
-            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
-            scene: scene
+          springs.append(Spring(
+            a: convert(toIndex: x, y: y - 1),
+            b: convert(toIndex: x, y: y),
+            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size
           ))
         }
       }
@@ -144,39 +146,55 @@ internal let titleBarHeight: CGFloat = 23
   }
 
   @objc public func startDrag(at point: CGPoint) {
-    let closestParticle = particles.reduce((particle: particles[0][0], distance: CGFloat.greatestFiniteMagnitude)) { (result, particles) in
-      let closestParticle = particles.reduce((particle: self.particles[0][0], distance: CGFloat.greatestFiniteMagnitude)) { (result, particle) in
-        let distance = particle.position.distanceTo(point: point)
-        return result.distance < distance ? result : (particle: particle, distance: distance)
-      }
-      return result.distance < closestParticle.distance ? result : closestParticle
-    }
+//    let closest = particles.enumerated().reduce((i: 0, distance: CGFloat.greatestFiniteMagnitude)) { (result, arg) in
+//      let (i, particle) = arg
+//      let distance = particle.position.distanceTo(point: point)
+//      return result.distance < distance ? result : (i: i, distance: distance)
+//    }
+    let closest = particles
+      .map { $0.position.distanceTo(point: point) }
+      .enumerated()
+      .min( by: { $0.1 < $1.1 } )!
+  
+    draggingParticle = closest.offset
+    dragOrigin = particles[closest.offset].position - point
 
-    draggingParticle = closestParticle.particle
-    dragOrigin = closestParticle.particle.position - point
-
-    closestParticle.particle.immobile = true
+    particles[closest.offset].immobile = true
   }
 
   @objc public func drag(at point: CGPoint) {
     if let dragOrigin = dragOrigin {
       let point = point + dragOrigin
-      draggingParticle?.position = point
+      if let i = draggingParticle {
+        particles[i].position = point
+      }
     }
   }
 
   @objc public func endDrag() {
-    draggingParticle?.immobile = false
+    if let i = draggingParticle {
+      particles[i].immobile = false
+    }
+    draggingParticle = nil
 
+    if timer != nil { // Dont start a after-drag loop when there is already one running
+      return
+    }
+    
     timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { (timer) in
+      if self.draggingParticle != nil { return } // when dragging during the after-drag loop, disable the loop
+      
       self.window.drawWarp()
-      self.step(delta: 0.01)
+      
+      for _ in 0..<10 {
+        self.step(delta: 0.001)
+      }
     }
   }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
     let position: CGPoint = CGVector(dx: x, dy: y).normalized * window.frame.size
-    let particle = particles[(GRID_HEIGHT - 1) - y][x]
+    let particle = particles[convert(toIndex: x, y: (GRID_HEIGHT - 1) - y)]
 
     var windowFrame = window.frame
     windowFrame.origin.y = window.screen!.frame.height - window.frame.origin.y
@@ -188,10 +206,10 @@ internal let titleBarHeight: CGFloat = 23
   }
 
   @objc var velocity: CGFloat {
-    return lastResult?.velocity ?? 0
+    return solver.velocity
   }
 
   @objc var force: CGFloat {
-    return lastResult?.force ?? 0
+    return solver.force
   }
 }
