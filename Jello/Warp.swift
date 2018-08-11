@@ -20,7 +20,7 @@ public func createPath (for points:[CGPoint]) -> CGMutablePath {
 internal var GRID_WIDTH = 8
 internal var GRID_HEIGHT = 8
 internal var springK: CGFloat = 8
-internal var friction: CGFloat = 2
+internal var friction: CGFloat = 0.8
 internal let titleBarHeight: CGFloat = 23
 
 // PROBLEM OCCURS WHEN YOU DRAG A WINDOW BEFORE IT EVEN STOPPED ANIMATING!
@@ -38,16 +38,15 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   var particles: [Particle]
   var springs = [Spring]()
   var steps: Double = 0
-  var scene: SKScene
+  var scene: SKScene?
   var draggingParticle: Int? = nil
   var dragOrigin: CGPoint? = nil
   var timer: Timer? = nil
   var screenHeight: CGFloat
   var solver: Solver!
   
-  init(window: NSWindow, scene: SKScene) {
+  @objc init(window: NSWindow) {
     self.window = window
-    self.scene = scene
     
     particles = (0 ..< (GRID_WIDTH * GRID_HEIGHT)).map { i in
       let (x, y) = convert(toPosition: i)
@@ -79,14 +78,19 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     
     super.init()
     
-    self.solver = VelocityVerlet(warp: self)
+    self.solver = SemiImplicitEuler(warp: self)
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
+  }
+  
+  convenience init(window: NSWindow, scene: SKScene) {
+    self.init(window: window)
+    self.scene = scene
   }
 
   @objc func step(delta: TimeInterval) {
     if delta > 0.5 { return }
-    self.steps += delta.milliseconds * 4
+    self.steps += delta.milliseconds
     let steps = floor(self.steps)
     self.steps -= steps
 
@@ -95,19 +99,17 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     }
 
     for _ in 0 ..< Int(steps) {
-      solver.step(particles: &particles, stepSize: 0.1)
+      solver.step(particles: &particles, stepSize: 0.2)
     }
 
-    if let timer = timer, self.force < 200 { // TODO: make configurable maybe
+    if let timer = timer, self.force < 20 { // TODO: make configurable maybe
       // TODO: move into timer block itself. not really step logic..
       timer.invalidate()
       self.timer = nil
       draggingParticle = nil
       dragOrigin = nil
 
-      let particle = particles[0]
-      window.setFrameOrigin(NSPoint(x: particle.position.x, y: particle.position.y))
-
+      window.setFrameOrigin(NSPoint(x: particles[0].position.x, y: particles[0].position.y))
       window.clearWarp()
     }
   }
@@ -147,11 +149,6 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   }
 
   @objc public func startDrag(at point: CGPoint) {
-//    let closest = particles.enumerated().reduce((i: 0, distance: CGFloat.greatestFiniteMagnitude)) { (result, arg) in
-//      let (i, particle) = arg
-//      let distance = particle.position.distanceTo(point: point)
-//      return result.distance < distance ? result : (i: i, distance: distance)
-//    }
     let closest = particles
       .map { $0.position.distanceTo(point: point) }
       .enumerated()
@@ -159,16 +156,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   
     draggingParticle = closest.offset
     dragOrigin = particles[closest.offset].position - point
-
     particles[closest.offset].immobile = true
-    
-    print( particles
-      .enumerated()
-      .filter { $0.1.immobile }
-      .map { (offset, particle) in
-        return offset
-    } )
-    
+    self.window.ignoresMouseEvents = true
   }
 
   @objc public func drag(at point: CGPoint) {
@@ -177,28 +166,33 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       if let i = draggingParticle {
         particles[i].position = point
       }
+    } else {
+      // Very dirty workaround
+      startDrag(at: NSEvent.mouseLocation)
+      drag(at: point)
     }
   }
 
   @objc public func endDrag() {
-    if let i = draggingParticle {
+    self.window.ignoresMouseEvents = false
+    draggingParticle = nil
+    for i in 0 ..< particles.count {
       particles[i].immobile = false
     }
-    draggingParticle = nil
 
     if timer != nil { // Dont start a after-drag loop when there is already one running
       return
     }
     
-    timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { (timer) in
+    timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { (timer) in
       if self.draggingParticle != nil { return } // when dragging during the after-drag loop, disable the loop
-      
+
       self.window.drawWarp()
-      
+
 //      for _ in 0..<10 {
 //        self.step(delta: 0.001)
 //      }
-      self.step(delta: 0.01)
+      self.step(delta: 1/60)
     }
   }
 

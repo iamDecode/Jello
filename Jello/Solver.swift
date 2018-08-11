@@ -39,7 +39,7 @@ class Solver {
     self.velocity = particles.reduce(0) { (a,b) in a + abs(b.velocity.dx) + abs(b.velocity.dy)}
     self.force = particles.reduce(0) { (a,b) in a + abs(b.force.dx) + abs(b.force.dy)}
     
-    if self.force > 20000 {
+    if self.force > 50000 {
       NSApplication.shared.terminate(self)
     }
     
@@ -56,7 +56,7 @@ class Euler: Solver {
       if particles[i].immobile {
         particles[i].velocity = CGVector.zero
         particles[i].force = CGVector.zero
-        return
+        continue
       }
 
       let k1 = deriv[i]
@@ -75,7 +75,7 @@ class SemiImplicitEuler: Solver {
       if particles[i].immobile {
         particles[i].velocity = CGVector.zero
         particles[i].force = CGVector.zero
-        return
+        continue
       }
       
       let k1 = deriv[i]
@@ -94,7 +94,7 @@ class VelocityVerlet: Solver {
       if particles[i].immobile {
         particles[i].velocity = CGVector.zero
         particles[i].force = CGVector.zero
-        return
+        continue
       }
       
       let k1 = deriv[i]

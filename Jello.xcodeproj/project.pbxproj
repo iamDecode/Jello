@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B419A4181F2B2C3A00FECC47 /* SBSWindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* SBSWindowAdditions.h */; };
-		B419A4191F2B2C3A00FECC47 /* SBSWindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* SBSWindowAdditions.mm */; };
+		B419A4181F2B2C3A00FECC47 /* WindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* WindowAdditions.h */; };
+		B419A4191F2B2C3A00FECC47 /* WindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* WindowAdditions.mm */; };
 		B4502AA62116FB8900C6D503 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA52116FB8900C6D503 /* Particle.swift */; };
 		B4502AA82117018B00C6D503 /* Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA72117018B00C6D503 /* Spring.swift */; };
 		B47DE14E1F23FB4300DE9C65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE14D1F23FB4300DE9C65 /* AppDelegate.swift */; };
@@ -54,8 +54,8 @@
 		B49962D62117404300B110BD /* CGVector+Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGVector+Math.swift"; sourceTree = "<group>"; };
 		B49962D82117405400B110BD /* CGPoint+Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Math.swift"; sourceTree = "<group>"; };
 		B49962DA2117407600B110BD /* TimeInterval+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Additions.swift"; sourceTree = "<group>"; };
-		B4D504941F292493001B8C1D /* SBSWindowAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SBSWindowAdditions.h; sourceTree = "<group>"; };
-		B4D504951F292493001B8C1D /* SBSWindowAdditions.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SBSWindowAdditions.mm; sourceTree = "<group>"; };
+		B4D504941F292493001B8C1D /* WindowAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowAdditions.h; sourceTree = "<group>"; };
+		B4D504951F292493001B8C1D /* WindowAdditions.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowAdditions.mm; sourceTree = "<group>"; };
 		B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jello-Bridging-Header.h"; sourceTree = "<group>"; };
 		B4FCEB63211CDB0D00E78CCF /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -108,8 +108,8 @@
 				B47DE1591F23FB4300DE9C65 /* Main.storyboard */,
 				B47DE15C1F23FB4300DE9C65 /* Info.plist */,
 				B47DE15D1F23FB4300DE9C65 /* Jello.entitlements */,
-				B4D504941F292493001B8C1D /* SBSWindowAdditions.h */,
-				B4D504951F292493001B8C1D /* SBSWindowAdditions.mm */,
+				B4D504941F292493001B8C1D /* WindowAdditions.h */,
+				B4D504951F292493001B8C1D /* WindowAdditions.mm */,
 				B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */,
 				B47DE1711F23FB8D00DE9C65 /* Warp.swift */,
 				B4502AA52116FB8900C6D503 /* Particle.swift */,
@@ -249,8 +249,8 @@
 				B4502AA62116FB8900C6D503 /* Particle.swift in Sources */,
 				B47DE1721F23FB8D00DE9C65 /* Warp.swift in Sources */,
 				B49962D72117404300B110BD /* CGVector+Math.swift in Sources */,
-				B419A4181F2B2C3A00FECC47 /* SBSWindowAdditions.h in Sources */,
-				B419A4191F2B2C3A00FECC47 /* SBSWindowAdditions.mm in Sources */,
+				B419A4181F2B2C3A00FECC47 /* WindowAdditions.h in Sources */,
+				B419A4191F2B2C3A00FECC47 /* WindowAdditions.mm in Sources */,
 				B49962DB2117407600B110BD /* TimeInterval+Additions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
