@@ -79,7 +79,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     
     super.init()
     
-    self.solver = Euler(warp: self)
+    self.solver = VelocityVerlet(warp: self)
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
   }
@@ -95,10 +95,11 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     }
 
     for _ in 0 ..< Int(steps) {
-      solver.step(particles: &particles, stepSize: 0.01)
+      solver.step(particles: &particles, stepSize: 0.1)
     }
 
     if let timer = timer, self.force < 200 { // TODO: make configurable maybe
+      // TODO: move into timer block itself. not really step logic..
       timer.invalidate()
       self.timer = nil
       draggingParticle = nil
@@ -160,6 +161,14 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     dragOrigin = particles[closest.offset].position - point
 
     particles[closest.offset].immobile = true
+    
+    print( particles
+      .enumerated()
+      .filter { $0.1.immobile }
+      .map { (offset, particle) in
+        return offset
+    } )
+    
   }
 
   @objc public func drag(at point: CGPoint) {
@@ -186,9 +195,10 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       
       self.window.drawWarp()
       
-      for _ in 0..<10 {
-        self.step(delta: 0.001)
-      }
+//      for _ in 0..<10 {
+//        self.step(delta: 0.001)
+//      }
+      self.step(delta: 0.01)
     }
   }
 
@@ -197,11 +207,11 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     let particle = particles[convert(toIndex: x, y: (GRID_HEIGHT - 1) - y)]
 
     var windowFrame = window.frame
-    windowFrame.origin.y = window.screen!.frame.height - window.frame.origin.y
+    windowFrame.origin.y = window.screen!.frame.height - window.frame.origin.y // This does not seem to do anything..?
 
     return CGPointWarp(
       local: MeshPoint(x: Float(position.x), y: Float(position.y)),
-      global: MeshPoint(x: Float(round(particle.position.x)), y: Float(screenHeight - round(particle.position.y)))
+      global: MeshPoint(x: Float(round(particle.position.x)), y: Float(screenHeight - round(particle.position.y))) // TODO: use UIScreen.convert
     )
   }
 
