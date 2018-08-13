@@ -17,8 +17,7 @@ class Spring {
     self.offset = offset
   }
 
-  func apply(particles: [Particle]) -> [Particle] {
-    var particles = particles
+  func apply(particles: inout [Particle]) -> [Particle] {
     let pa = particles[a].position
     let pb = particles[b].position
 
@@ -36,7 +35,7 @@ extension Collection where Element == Spring {
   func apply(particles: [Particle]) -> [Particle] {
     var particles = particles
     for spring in self {
-      particles = spring.apply(particles: particles)
+      particles = spring.apply(particles: &particles)
     }
     
     return particles
