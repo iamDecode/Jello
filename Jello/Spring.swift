@@ -10,11 +10,13 @@ class Spring {
   var a: Int
   var b: Int
   var offset: CGPoint
+  var springK: CGFloat
 
-  init(a: Int, b: Int, offset: CGPoint) {
+  init(a: Int, b: Int, offset: CGPoint, springK: CGFloat) { // TODO: offset should be vector, not point
     self.a = a
     self.b = b
     self.offset = offset
+    self.springK = springK
   }
 
   func apply(particles: inout [Particle]) {

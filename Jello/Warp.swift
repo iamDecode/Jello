@@ -12,7 +12,7 @@ import SpriteKit
 
 internal var GRID_WIDTH = 8
 internal var GRID_HEIGHT = 8
-internal var springK: CGFloat = 10
+internal var springK: CGFloat = 7
 internal var friction: CGFloat = 1
 internal let titleBarHeight: CGFloat = 23
 
@@ -32,8 +32,6 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   var springs = [Spring]()
   var steps: Double = 0
   var scene: SKScene?
-  var draggingParticle: Int? = nil
-  var dragOrigin: CGPoint? = nil
   var timer: Timer? = nil
   var screenHeight: CGFloat
   var solver: Solver!
@@ -53,7 +51,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
           springs.append(Spring(
             a: convert(toIndex: x - 1, y: y),
             b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size
+            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
+            springK: springK
           ))
         }
 
@@ -61,7 +60,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
           springs.append(Spring(
             a: convert(toIndex: x, y: y - 1),
             b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size
+            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
+            springK: springK
           ))
         }
       }
@@ -83,7 +83,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
 
   @objc func step(delta: TimeInterval) {
     if delta > 0.5 { return }
-    self.steps += delta.milliseconds
+    self.steps += delta.milliseconds / 3
     let steps = floor(self.steps)
     self.steps -= steps
 
@@ -92,15 +92,13 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     }
 
     for _ in 0 ..< Int(steps) {
-      solver.step(particles: &particles, stepSize: 0.2)
+      solver.step(particles: &particles, stepSize: 0.5)
     }
 
     if let timer = timer, self.force < 20 { // TODO: make configurable maybe
       // TODO: move into timer block itself. not really step logic..
       timer.invalidate()
       self.timer = nil
-      draggingParticle = nil
-      dragOrigin = nil
       
       let frame = NSRect(
         x: particles[0].position.x,
@@ -134,7 +132,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
           springs.append(Spring(
             a: convert(toIndex: x - 1, y: y),
             b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size
+            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
+            springK: springK
           ))
         }
 
@@ -142,7 +141,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
           springs.append(Spring(
             a: convert(toIndex: x, y: y - 1),
             b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size
+            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
+            springK: springK
           ))
         }
       }
@@ -150,24 +150,35 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   }
 
   @objc public func startDrag(at point: CGPoint) {
-    let closest = particles
+    let distances = particles.prefix(GRID_WIDTH)
       .map { $0.position.distanceTo(point: point) }
+
+    let closest = distances
+      .map { ($0 - distances.min()!) / (distances.max()! - distances.min()!) }
       .enumerated()
-      .min( by: { $0.1 < $1.1 } )!
-  
-    draggingParticle = closest.offset
-    dragOrigin = particles[closest.offset].position - point
-    particles[closest.offset].immobile = true
+      //.sorted( by: { $0.1 < $1.1 } )
+      //.prefix(4)
+
+    let idx = GRID_WIDTH * GRID_HEIGHT
+    particles.append(Particle(position: point))
+    particles[idx].immobile = true
+
+    for (offset, distance) in closest {
+      let particle = (GRID_WIDTH * (GRID_HEIGHT - 1)) + offset
+      springs.append(Spring(
+          a: particle,
+          b: idx,
+          offset: CGPoint(x: point.x - particles[particle].position.x, y: point.y - particles[particle].position.y),
+          springK: (springK * pow(CGFloat(M_E), -5 * pow(distance,2)))
+      ))
+    }
     
     self.window.styleMask.remove(NSWindow.StyleMask.resizable)
   }
 
   @objc public func drag(at point: CGPoint) {
-    if let dragOrigin = dragOrigin {
-      let point = point + dragOrigin
-      if let i = draggingParticle {
-        particles[i].position = point
-      }
+    if particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) {
+      particles[GRID_WIDTH * GRID_HEIGHT].position = point
     } else {
       // Very dirty workaround
       startDrag(at: NSEvent.mouseLocation)
@@ -176,23 +187,20 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   }
 
   @objc public func endDrag() {
-    draggingParticle = nil
-    for i in 0 ..< particles.count {
-      particles[i].immobile = false
-    }
+    let idx = GRID_WIDTH * (GRID_HEIGHT - 1) + GRID_HEIGHT * (GRID_WIDTH - 1)
+    springs.removeLast(springs.count - idx)
+    if particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { particles.remove(at: GRID_WIDTH * GRID_HEIGHT) }
 
     if timer != nil { // Dont start a after-drag loop when there is already one running
       return
     }
     
     timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { (timer) in
-      if self.draggingParticle != nil { return } // when dragging during the after-drag loop, disable the loop
+      // when dragging during the after-drag loop, disable the loop
+      if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
 
       self.window.drawWarp()
 
-//      for _ in 0..<10 {
-//        self.step(delta: 0.001)
-//      }
       self.step(delta: 1/60)
     }
   }
