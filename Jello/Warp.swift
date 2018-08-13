@@ -10,20 +10,12 @@ import Foundation
 import SpriteKit
 
 
-public func createPath (for points:[CGPoint]) -> CGMutablePath {
-  let path = CGMutablePath()
-  path.addLines(between: points)
-  path.closeSubpath()
-  return path
-}
-
 internal var GRID_WIDTH = 8
 internal var GRID_HEIGHT = 8
 internal var springK: CGFloat = 10
 internal var friction: CGFloat = 1
 internal let titleBarHeight: CGFloat = 23
 
-// PROBLEM OCCURS WHEN YOU DRAG A WINDOW BEFORE IT EVEN STOPPED ANIMATING!
 
 internal func convert(toPosition i: Int) -> (Int, Int) {
   return (i % GRID_WIDTH, i.unsafeDivided(by: GRID_WIDTH))
@@ -32,6 +24,7 @@ internal func convert(toPosition i: Int) -> (Int, Int) {
 internal func convert(toIndex x: Int, y: Int) -> Int {
   return (y * GRID_WIDTH) + x
 }
+
 
 @objc class Warp: NSObject {
   var window: NSWindow

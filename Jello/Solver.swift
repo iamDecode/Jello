@@ -28,16 +28,16 @@ class Solver {
       particles[i].force = CGVector.zero
     }
     
+    // Apply spring forces
+    warp.springs.apply(particles: &particles)
+
     // Apply friction
     for i in 0..<particles.count {
       particles[i].force -= particles[i].velocity * friction
     }
-    
-    // Apply spring forces
-    particles = warp.springs.apply(particles: particles)
-    
-    self.velocity = particles.reduce(0) { (a,b) in a + abs(b.velocity.dx) + abs(b.velocity.dy)}
-    self.force = particles.reduce(0) { (a,b) in a + abs(b.force.dx) + abs(b.force.dy)}
+
+    //self.velocity = particles.reduce(0) { (a,b) in a + abs(b.velocity.dx) + abs(b.velocity.dy)}
+    self.force = particles.reduce(0) { (a,b) in a + abs(b.force.dx) + abs(b.force.dy) }
     
     if self.force > 50000 {
       NSApplication.shared.terminate(self)
