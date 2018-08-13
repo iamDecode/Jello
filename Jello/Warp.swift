@@ -19,8 +19,8 @@ public func createPath (for points:[CGPoint]) -> CGMutablePath {
 
 internal var GRID_WIDTH = 8
 internal var GRID_HEIGHT = 8
-internal var springK: CGFloat = 8
-internal var friction: CGFloat = 0.8
+internal var springK: CGFloat = 10
+internal var friction: CGFloat = 1
 internal let titleBarHeight: CGFloat = 23
 
 // PROBLEM OCCURS WHEN YOU DRAG A WINDOW BEFORE IT EVEN STOPPED ANIMATING!
@@ -74,7 +74,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       }
     }
 
-    screenHeight = NSScreen.main!.frame.height
+    screenHeight = NSScreen.screens.first!.frame.height
     
     super.init()
     
@@ -108,9 +108,17 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       self.timer = nil
       draggingParticle = nil
       dragOrigin = nil
-
-      window.setFrameOrigin(NSPoint(x: particles[0].position.x, y: particles[0].position.y))
+      
+      let frame = NSRect(
+        x: particles[0].position.x,
+        y: particles[0].position.y,
+        width: window.frame.width,
+        height: window.frame.height
+      )
+      window.setFrame(frame, display: false)
       window.clearWarp()
+      
+      self.window.styleMask.insert(NSWindow.StyleMask.resizable)
     }
   }
 
@@ -157,7 +165,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     draggingParticle = closest.offset
     dragOrigin = particles[closest.offset].position - point
     particles[closest.offset].immobile = true
-    self.window.ignoresMouseEvents = true
+    
+    self.window.styleMask.remove(NSWindow.StyleMask.resizable)
   }
 
   @objc public func drag(at point: CGPoint) {
@@ -174,7 +183,6 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   }
 
   @objc public func endDrag() {
-    self.window.ignoresMouseEvents = false
     draggingParticle = nil
     for i in 0 ..< particles.count {
       particles[i].immobile = false
@@ -199,10 +207,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
     let position: CGPoint = CGVector(dx: x, dy: y).normalized * window.frame.size
     let particle = particles[convert(toIndex: x, y: (GRID_HEIGHT - 1) - y)]
-
-    var windowFrame = window.frame
-    windowFrame.origin.y = window.screen!.frame.height - window.frame.origin.y // This does not seem to do anything..?
-
+    
     return CGPointWarp(
       local: MeshPoint(x: Float(position.x), y: Float(position.y)),
       global: MeshPoint(x: Float(round(particle.position.x)), y: Float(screenHeight - round(particle.position.y))) // TODO: use UIScreen.convert

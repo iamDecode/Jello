@@ -40,6 +40,7 @@ static NSPoint gWindowTrackingEventOrigin, gWindowTrackingCurrentWindowOrigin;
 
 - (void) drawWarp;
 - (void) clearWarp;
+- (void) setAlpha:(float) alpha;
 + (void) setLiveFrameTracking:(BOOL) bol;
 + (BOOL) isLiveFrameTracking;
 

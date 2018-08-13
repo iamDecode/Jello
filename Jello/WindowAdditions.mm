@@ -152,6 +152,11 @@ NSTimeInterval previousUpdate = 0.0;
   ClearWindowWarp(self);
 }
 
+- (void) setAlpha: (float) alpha {
+  CGSConnection cid = _CGSDefaultConnection();
+  CGSSetWindowAlpha(cid, CGSWindow(self.windowNumber), alpha);
+}
+
 
 
 @end
