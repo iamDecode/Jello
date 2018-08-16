@@ -169,7 +169,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
           a: particle,
           b: idx,
           offset: CGPoint(x: point.x - particles[particle].position.x, y: point.y - particles[particle].position.y),
-          springK: (springK * pow(CGFloat(M_E), -5 * pow(distance,2)))
+          springK: springK * (1 - pow(distance, 1/2.5))
       ))
     }
     
