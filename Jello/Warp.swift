@@ -106,8 +106,20 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
         width: window.frame.width,
         height: window.frame.height
       )
+      
+      CATransaction.begin()
+      CATransaction.setCompletionBlock {
+        self.window.clearWarp()
+      }
+      self.window.clearWarp()
       window.setFrame(frame, display: false)
-      window.clearWarp()
+      CATransaction.commit()
+      
+//      self.window.clearWarp()
+//      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//        //self.window.setFrame(frame, display: false)
+//        self.window.setFrameOrigin(frame.origin)
+//      }
       
       self.window.styleMask.insert(NSWindow.StyleMask.resizable)
     }
@@ -199,9 +211,8 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       // when dragging during the after-drag loop, disable the loop
       if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
 
-      self.window.drawWarp()
-
       self.step(delta: 1/60)
+      self.window.drawWarp()
     }
   }
 
