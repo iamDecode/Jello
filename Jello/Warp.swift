@@ -83,46 +83,19 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
 
   @objc func step(delta: TimeInterval) {
     if delta > 0.5 { return }
-    self.steps += delta.milliseconds / 3
-    let steps = floor(self.steps)
-    self.steps -= steps
+//    self.steps += delta.milliseconds / 3
+//    let steps = floor(self.steps)
+//    self.steps -= steps
+//
+//    if steps.isZero {
+//      return
+//    }
 
-    if steps.isZero {
-      return
+    for _ in 0 ..< 10 {
+      solver.step(particles: &particles, stepSize: CGFloat(20*delta))
     }
 
-    for _ in 0 ..< Int(steps) {
-      solver.step(particles: &particles, stepSize: 0.5)
-    }
-
-    if let timer = timer, self.force < 20 { // TODO: make configurable maybe
-      // TODO: move into timer block itself. not really step logic..
-      timer.invalidate()
-      self.timer = nil
-      
-      let frame = NSRect(
-        x: particles[0].position.x,
-        y: particles[0].position.y,
-        width: window.frame.width,
-        height: window.frame.height
-      )
-      
-      CATransaction.begin()
-      CATransaction.setCompletionBlock {
-        self.window.clearWarp()
-      }
-      self.window.clearWarp()
-      window.setFrame(frame, display: false)
-      CATransaction.commit()
-      
-//      self.window.clearWarp()
-//      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//        //self.window.setFrame(frame, display: false)
-//        self.window.setFrameOrigin(frame.origin)
-//      }
-      
-      self.window.styleMask.insert(NSWindow.StyleMask.resizable)
-    }
+    self.window.drawWarp()
   }
 
   @objc func didResize(notification: NSNotification) {
@@ -211,8 +184,27 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       // when dragging during the after-drag loop, disable the loop
       if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
 
-      self.step(delta: 1/60)
-      self.window.drawWarp()
+      if self.force < 20 { // TODO: make configurable maybe
+        timer.invalidate()
+        self.timer = nil
+
+        let frame = NSRect(
+          x: self.particles[0].position.x,
+          y: self.particles[0].position.y,
+          width: self.window.frame.width,
+          height: self.window.frame.height
+        )
+
+
+        CATransaction.begin()
+        self.window.clearWarp()
+        self.window.setFrame(frame, display: true)
+        CATransaction.commit()
+
+        self.window.styleMask.insert(NSWindow.StyleMask.resizable)
+      } else {
+        self.step(delta: 1/60)
+      }
     }
   }
 

@@ -116,18 +116,12 @@ NSTimeInterval previousUpdate = 0.0;
     [window.warp endDrag];
   } else {
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
-    if (timestamp - previousUpdate < 1/60) {
-      return;
-    }
-    
     float diff = timestamp - previousUpdate;
     
     [window.warp dragAt:NSEvent.mouseLocation];
     [self.warp stepWithDelta: diff];
-    
-    [self drawWarp];
 
-    [NSThread sleepForTimeInterval:0.0083f]; // sleep to prevent very quick while loop
+    [NSThread sleepForTimeInterval: (1.0f / 750.0f)]; // sleep to prevent very quick while loop
     previousUpdate = timestamp;
   }
 }
