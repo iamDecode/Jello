@@ -18,7 +18,7 @@ internal let titleBarHeight: CGFloat = 23
 
 
 internal func convert(toPosition i: Int) -> (Int, Int) {
-  return (i % GRID_WIDTH, i.unsafeDivided(by: GRID_WIDTH))
+  return (i % GRID_WIDTH, i / GRID_WIDTH)
 }
 
 internal func convert(toIndex x: Int, y: Int) -> Int {
