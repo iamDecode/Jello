@@ -40,12 +40,12 @@ extern "C" {
 
 void SetWindowAlpha(NSWindow* window, float alpha) {
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowAlpha(cid, [window windowNumber], alpha);
+  CGSSetWindowAlpha(cid, CGSWindow([window windowNumber]), alpha);
 }
 
 void ClearWindowWarp(NSWindow* window) {
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowWarp(cid, [window windowNumber], 0, 0, NULL);
+  CGSSetWindowWarp(cid, CGSWindow([window windowNumber]), 0, 0, NULL);
 }
 
 
@@ -126,15 +126,6 @@ NSTimeInterval previousUpdate = 0.0;
 - (void) drawWarp {
   CGSConnection cid = _CGSDefaultConnection();
 
-//  CGRect bounds = NSZeroRect;
-//  CGSGetWindowBounds(cid, CGSWindow(self.windowNumber), &bounds);
-//  // TODO: should run this more often than the setwindowwarp. And subtract difference between window position (or mouse) and particle position.
-//  CGSMoveWindow(cid, CGSWindow(self.windowNumber), &bounds.origin);
-//
-//  CGPointWarp pw = [self.warp meshPointWithX:0 y:0];
-//  CGPoint point = CGPointMake(pw.global.x, pw.global.y);
-//  CGSMoveWindow(cid, CGSWindow(self.windowNumber), &point);
-
   // normal grid
   int GRID_WIDTH = 8;
   int GRID_HEIGHT = 8;
@@ -148,8 +139,18 @@ NSTimeInterval previousUpdate = 0.0;
   CGSSetWindowWarp(cid, CGSWindow(self.windowNumber), GRID_WIDTH, GRID_HEIGHT, &(mesh[0][0]));
 }
 
+- (void) setFrameDirty:(NSRect) frame {
+  // This timeout prevents the setFrame and clearwindow to interfere with the previously set warps, which caused glitches.
+  [NSTimer scheduledTimerWithTimeInterval:(1.0f/60.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
+    [self setFrame:frame display:NO];
+    ClearWindowWarp(self);
+  }];
+}
+
 - (void) clearWarp {
-  ClearWindowWarp(self);
+  [NSTimer scheduledTimerWithTimeInterval:(1.0f/2.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
+    ClearWindowWarp(self);
+  }];
 }
 
 - (void) setAlpha: (float) alpha {

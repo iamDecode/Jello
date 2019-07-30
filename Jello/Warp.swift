@@ -195,11 +195,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
           height: self.window.frame.height
         )
 
-
-        CATransaction.begin()
-        self.window.clearWarp()
-        self.window.setFrame(frame, display: true)
-        CATransaction.commit()
+        self.window.setFrameDirty(frame)
 
         self.window.styleMask.insert(NSWindow.StyleMask.resizable)
       } else {

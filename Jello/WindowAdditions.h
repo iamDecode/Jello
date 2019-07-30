@@ -37,5 +37,6 @@ extern "C" {
 - (void) drawWarp;
 - (void) clearWarp;
 - (void) setAlpha:(float) alpha;
+- (void) setFrameDirty:(NSRect) frame;
 
 @end
