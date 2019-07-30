@@ -67,23 +67,7 @@ NSString const *key = @"warp";
 
 
 + (void)load {
-  [self setLiveFrameTracking: YES];
-}
-
-+ (void) setLiveFrameTracking:(BOOL) bol {
-  gWindowTrackingEnabled = bol;
-  if (bol) {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willMove:) name:NSWindowWillMoveNotification object:nil];
-    // getting informed as soon as any window is dragged
-  }
-  else {
-    gWindowTracking = NO;                  // like this, applications can interrupt even ongoing frame tracking
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillMoveNotification object:nil];
-  }
-}
-
-+ (BOOL) isLiveFrameTracking {
-  return gWindowTrackingEnabled;
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willMove:) name:NSWindowWillMoveNotification object:nil];
 }
 
 + (void) willMove:(id) notification {
@@ -95,40 +79,62 @@ NSString const *key = @"warp";
   }
   
   [window.warp startDragAt: NSEvent.mouseLocation];
-  gWindowTracking = YES;
   
   [NSThread detachNewThreadSelector:@selector(windowMoves:) toTarget:(NSWindow*)[(NSNotification*)notification object] withObject:notification];
 }
 
 
+id monitor;
 - (void) windowMoves:(id) notification {
-  while (gWindowTracking) {
-    [self performSelectorOnMainThread:@selector(windowMoved:) withObject:notification waitUntilDone:YES];
+  NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
+  [self performSelectorOnMainThread:@selector(startMoveLoop:) withObject:notification waitUntilDone:YES];
+
+  if (monitor != NULL) { // only disable mouseup monitor when we move a window again, because sometimes the first event does not fully trigger.
+    [NSEvent removeMonitor:monitor];
   }
+
+  monitor = [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskLeftMouseUp | NSEventMaskRightMouseUp handler:^(NSEvent *event) {
+    [window moveStopped];
+  }];
+}
+
+NSTimer *timer;
+- (void) startMoveLoop: (id) notification {
+  NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
+  timer = [NSTimer scheduledTimerWithTimeInterval:(1.0f / 60.0f) target:self selector:@selector(windowMoved:) userInfo:window repeats:YES];
 }
 
 NSTimeInterval previousUpdate = 0.0;
 
-- (void) windowMoved:(id) notification {
-  NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
-  if ([NSApp nextEventMatchingMask:NSEventMaskLeftMouseUp untilDate:nil inMode:NSEventTrackingRunLoopMode dequeue:NO]) {
-    gWindowTracking = NO;
-    [window.warp endDrag];
-  } else {
-    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
-    float diff = timestamp - previousUpdate;
-    
-    [window.warp dragAt:NSEvent.mouseLocation];
-    [self.warp stepWithDelta: diff];
+- (void) windowMoved:(NSTimer*) timer {
+  NSWindow* window = [timer userInfo];
+  NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+  float diff = timestamp - previousUpdate;
 
-    [NSThread sleepForTimeInterval: (1.0f / 750.0f)]; // sleep to prevent very quick while loop
-    previousUpdate = timestamp;
-  }
+  [window.warp dragAt:NSEvent.mouseLocation];
+  [self.warp stepWithDelta: diff];
+
+  previousUpdate = timestamp;
+}
+
+- (void) moveStopped {
+  [timer invalidate];
+  timer = NULL;
+  [self.warp endDrag];
 }
 
 - (void) drawWarp {
   CGSConnection cid = _CGSDefaultConnection();
-  
+
+//  CGRect bounds = NSZeroRect;
+//  CGSGetWindowBounds(cid, CGSWindow(self.windowNumber), &bounds);
+//  // TODO: should run this more often than the setwindowwarp. And subtract difference between window position (or mouse) and particle position.
+//  CGSMoveWindow(cid, CGSWindow(self.windowNumber), &bounds.origin);
+//
+//  CGPointWarp pw = [self.warp meshPointWithX:0 y:0];
+//  CGPoint point = CGPointMake(pw.global.x, pw.global.y);
+//  CGSMoveWindow(cid, CGSWindow(self.windowNumber), &point);
+
   // normal grid
   int GRID_WIDTH = 8;
   int GRID_HEIGHT = 8;
@@ -138,7 +144,7 @@ NSTimeInterval previousUpdate = 0.0;
       mesh[y][x] = [self.warp meshPointWithX:x y:y];
     }
   }
-  
+
   CGSSetWindowWarp(cid, CGSWindow(self.windowNumber), GRID_WIDTH, GRID_HEIGHT, &(mesh[0][0]));
 }
 

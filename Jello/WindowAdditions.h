@@ -29,19 +29,13 @@ extern "C" {
 }
 #endif
 
-static BOOL gWindowTrackingEnabled = YES;
-static BOOL gWindowTracking = YES;
-static NSPoint gWindowTrackingEventOrigin, gWindowTrackingCurrentWindowOrigin;
-
 @class Warp;
 
 @interface NSWindow (WindowAdditions)
-@property (weak, nonatomic) Warp *warp;
+@property (retain, nonatomic) Warp *warp;
 
 - (void) drawWarp;
 - (void) clearWarp;
 - (void) setAlpha:(float) alpha;
-+ (void) setLiveFrameTracking:(BOOL) bol;
-+ (BOOL) isLiveFrameTracking;
 
 @end
