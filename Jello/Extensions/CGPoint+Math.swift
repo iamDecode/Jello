@@ -6,6 +6,8 @@
 //  Copyright © 2018 collaris. All rights reserved.
 //
 
+import Foundation
+
 extension CGPoint {
   func distanceTo(point: CGPoint) -> CGFloat {
     let distx = self.x - point.x

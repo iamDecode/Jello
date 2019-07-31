@@ -6,6 +6,8 @@
 //  Copyright © 2018 collaris. All rights reserved.
 //
 
+import Foundation
+
 class Spring {
   var a: Int
   var b: Int

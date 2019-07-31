@@ -9,8 +9,8 @@
 #import "WindowAdditions.h"
 #import "Cocoa/Cocoa.h"
 #import <SpriteKit/SpriteKit.h>
-#import "Jello-Swift.h"
 #import <objc/runtime.h>
+#import "Jello-Swift.h"
 
 #ifdef __cplusplus
 extern "C" {

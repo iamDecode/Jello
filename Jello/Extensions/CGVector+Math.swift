@@ -6,6 +6,8 @@
 //  Copyright © 2018 collaris. All rights reserved.
 //
 
+import Foundation
+
 extension CGVector {
   var normalized: CGVector {
     return CGVector(dx: self.dx / CGFloat(GRID_WIDTH-1), dy: self.dy / CGFloat(GRID_HEIGHT-1))

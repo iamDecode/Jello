@@ -6,6 +6,8 @@
 //  Copyright © 2018 collaris. All rights reserved.
 //
 
+import Foundation
+
 extension TimeInterval {
   var milliseconds: Double {
     return self * 1000

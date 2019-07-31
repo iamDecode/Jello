@@ -6,6 +6,8 @@
 //  Copyright © 2018 collaris. All rights reserved.
 //
 
+import Foundation
+
 typealias StepResult = (velocity: CGFloat, force: CGFloat)
 
 struct Particle {
