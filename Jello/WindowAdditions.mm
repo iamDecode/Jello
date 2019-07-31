@@ -9,8 +9,11 @@
 #import "WindowAdditions.h"
 #import "Cocoa/Cocoa.h"
 #import <SpriteKit/SpriteKit.h>
-#import "Jello-Swift.h"
 #import <objc/runtime.h>
+
+// TODO: if Jello then, else...
+#import "Jello-Swift.h"
+#import "JelloInject-Swift.h"
 
 #ifdef __cplusplus
 extern "C" {

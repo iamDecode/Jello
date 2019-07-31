@@ -6,8 +6,7 @@
 //  Copyright © 2017 collaris. All rights reserved.
 //
 
-import Foundation
-import SpriteKit
+import AppKit
 
 
 internal var GRID_WIDTH = 8
@@ -37,7 +36,6 @@ extension NSScreen {
   var particles: [Particle]
   var springs = [Spring]()
   var steps: Double = 0
-  var scene: SKScene?
   var timer: Timer? = nil
   var firstScreen: NSScreen
   var solver: Solver!
@@ -80,11 +78,6 @@ extension NSScreen {
     self.solver = VelocityVerlet(warp: self)
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
-  }
-  
-  convenience init(window: NSWindow, scene: SKScene) {
-    self.init(window: window)
-    self.scene = scene
   }
 
   @objc func step(delta: TimeInterval) {

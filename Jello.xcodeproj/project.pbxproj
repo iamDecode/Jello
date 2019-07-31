@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B414A10D22F1E19800D02192 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B414A10C22F1E19800D02192 /* Cocoa.framework */; };
+		B414A11022F1E36C00D02192 /* CGVector+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962D62117404300B110BD /* CGVector+Math.swift */; };
+		B414A11122F1E36C00D02192 /* CGPoint+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962D82117405400B110BD /* CGPoint+Math.swift */; };
+		B414A11222F1E36C00D02192 /* TimeInterval+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962DA2117407600B110BD /* TimeInterval+Additions.swift */; };
+		B414A11322F1E36C00D02192 /* WindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* WindowAdditions.h */; };
+		B414A11422F1E36C00D02192 /* WindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* WindowAdditions.mm */; };
+		B414A11522F1E36C00D02192 /* Warp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE1711F23FB8D00DE9C65 /* Warp.swift */; };
+		B414A11622F1E36C00D02192 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA52116FB8900C6D503 /* Particle.swift */; };
+		B414A11722F1E36C00D02192 /* Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA72117018B00C6D503 /* Spring.swift */; };
+		B414A11822F1E36C00D02192 /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FCEB63211CDB0D00E78CCF /* Solver.swift */; };
+		B414A11B22F1E38D00D02192 /* JelloInject.m in Sources */ = {isa = PBXBuildFile; fileRef = B414A11A22F1E38D00D02192 /* JelloInject.m */; };
 		B419A4181F2B2C3A00FECC47 /* WindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* WindowAdditions.h */; };
 		B419A4191F2B2C3A00FECC47 /* WindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* WindowAdditions.mm */; };
 		B4502AA62116FB8900C6D503 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA52116FB8900C6D503 /* Particle.swift */; };
@@ -33,6 +44,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B414A10522F1E16A00D02192 /* JelloInject.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JelloInject.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		B414A10722F1E16A00D02192 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B414A10C22F1E19800D02192 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B414A10E22F1E2BF00D02192 /* JelloInject-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = "JelloInject-Info.plist"; path = "JelloInject/JelloInject-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B414A11922F1E38D00D02192 /* JelloInject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JelloInject.h; path = JelloInject/JelloInject.h; sourceTree = SOURCE_ROOT; };
+		B414A11A22F1E38D00D02192 /* JelloInject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JelloInject.m; path = JelloInject/JelloInject.m; sourceTree = SOURCE_ROOT; };
+		B414A11C22F1E40A00D02192 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		B435E79F22F1C78900FF5C55 /* Jello.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Jello.entitlements; sourceTree = "<group>"; };
 		B4502AA52116FB8900C6D503 /* Particle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Particle.swift; sourceTree = "<group>"; };
 		B4502AA72117018B00C6D503 /* Spring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spring.swift; sourceTree = "<group>"; };
@@ -40,7 +58,7 @@
 		B47DE14D1F23FB4300DE9C65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B47DE1551F23FB4300DE9C65 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B47DE15A1F23FB4300DE9C65 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		B47DE15C1F23FB4300DE9C65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B47DE15C1F23FB4300DE9C65 /* Jello-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Jello-Info.plist"; sourceTree = "<group>"; };
 		B47DE1621F23FB4300DE9C65 /* JelloTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JelloTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B47DE1661F23FB4300DE9C65 /* JelloTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JelloTests.swift; sourceTree = "<group>"; };
 		B47DE1681F23FB4300DE9C65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -55,6 +73,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B414A10222F1E16A00D02192 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B414A10D22F1E19800D02192 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B47DE1471F23FB4300DE9C65 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -76,7 +102,8 @@
 			isa = PBXGroup;
 			children = (
 				B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */,
-				B47DE15C1F23FB4300DE9C65 /* Info.plist */,
+				B47DE15C1F23FB4300DE9C65 /* Jello-Info.plist */,
+				B414A10E22F1E2BF00D02192 /* JelloInject-Info.plist */,
 				B435E79F22F1C78900FF5C55 /* Jello.entitlements */,
 			);
 			path = "Supporting Files";
@@ -90,12 +117,31 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		B414A10622F1E16A00D02192 /* JelloInject */ = {
+			isa = PBXGroup;
+			children = (
+				B414A10722F1E16A00D02192 /* Info.plist */,
+			);
+			path = JelloInject;
+			sourceTree = "<group>";
+		};
+		B414A10B22F1E19800D02192 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B414A11C22F1E40A00D02192 /* CoreGraphics.framework */,
+				B414A10C22F1E19800D02192 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B47DE1411F23FB4300DE9C65 = {
 			isa = PBXGroup;
 			children = (
 				B47DE14C1F23FB4300DE9C65 /* Jello */,
 				B47DE1651F23FB4300DE9C65 /* JelloTests */,
+				B414A10622F1E16A00D02192 /* JelloInject */,
 				B47DE14B1F23FB4300DE9C65 /* Products */,
+				B414A10B22F1E19800D02192 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,6 +150,7 @@
 			children = (
 				B47DE14A1F23FB4300DE9C65 /* Jello.app */,
 				B47DE1621F23FB4300DE9C65 /* JelloTests.xctest */,
+				B414A10522F1E16A00D02192 /* JelloInject.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,6 +167,8 @@
 				B4502AA52116FB8900C6D503 /* Particle.swift */,
 				B4502AA72117018B00C6D503 /* Spring.swift */,
 				B4FCEB63211CDB0D00E78CCF /* Solver.swift */,
+				B414A11922F1E38D00D02192 /* JelloInject.h */,
+				B414A11A22F1E38D00D02192 /* JelloInject.m */,
 				B40D616F22F1C65100E17A65 /* Resources */,
 				B40D616E22F1C62000E17A65 /* Supporting Files */,
 			);
@@ -148,6 +197,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B414A10422F1E16A00D02192 /* JelloInject */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B414A10A22F1E16A00D02192 /* Build configuration list for PBXNativeTarget "JelloInject" */;
+			buildPhases = (
+				B414A10122F1E16A00D02192 /* Sources */,
+				B414A10222F1E16A00D02192 /* Frameworks */,
+				B414A10322F1E16A00D02192 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JelloInject;
+			productName = JelloInject;
+			productReference = B414A10522F1E16A00D02192 /* JelloInject.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		B47DE1491F23FB4300DE9C65 /* Jello */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B47DE16B1F23FB4300DE9C65 /* Build configuration list for PBXNativeTarget "Jello" */;
@@ -193,6 +259,10 @@
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = collaris;
 				TargetAttributes = {
+					B414A10422F1E16A00D02192 = {
+						CreatedOnToolsVersion = 11.0;
+						ProvisioningStyle = Automatic;
+					};
 					B47DE1491F23FB4300DE9C65 = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 1100;
@@ -219,11 +289,19 @@
 			targets = (
 				B47DE1491F23FB4300DE9C65 /* Jello */,
 				B47DE1611F23FB4300DE9C65 /* JelloTests */,
+				B414A10422F1E16A00D02192 /* JelloInject */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B414A10322F1E16A00D02192 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B47DE1481F23FB4300DE9C65 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -242,6 +320,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B414A10122F1E16A00D02192 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B414A11022F1E36C00D02192 /* CGVector+Math.swift in Sources */,
+				B414A11122F1E36C00D02192 /* CGPoint+Math.swift in Sources */,
+				B414A11222F1E36C00D02192 /* TimeInterval+Additions.swift in Sources */,
+				B414A11322F1E36C00D02192 /* WindowAdditions.h in Sources */,
+				B414A11422F1E36C00D02192 /* WindowAdditions.mm in Sources */,
+				B414A11522F1E36C00D02192 /* Warp.swift in Sources */,
+				B414A11622F1E36C00D02192 /* Particle.swift in Sources */,
+				B414A11B22F1E38D00D02192 /* JelloInject.m in Sources */,
+				B414A11722F1E36C00D02192 /* Spring.swift in Sources */,
+				B414A11822F1E36C00D02192 /* Solver.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B47DE1461F23FB4300DE9C65 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -290,6 +385,47 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		B414A10822F1E16A00D02192 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = P2BY58D85Z;
+				INFOPLIST_FILE = "JelloInject/JelloInject-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.decode.JelloInject;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		B414A10922F1E16A00D02192 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = P2BY58D85Z;
+				INFOPLIST_FILE = "JelloInject/JelloInject-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.decode.JelloInject;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		B47DE1691F23FB4300DE9C65 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -403,15 +539,14 @@
 		B47DE16C1F23FB4300DE9C65 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Jello/Supporting Files/Jello.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = P2BY58D85Z;
-				INFOPLIST_FILE = "Jello/Supporting Files/Info.plist";
+				INFOPLIST_FILE = "Jello/Supporting Files/Jello-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.collaris.Jello;
+				PRODUCT_BUNDLE_IDENTIFIER = com.decode.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -422,15 +557,14 @@
 		B47DE16D1F23FB4300DE9C65 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Jello/Supporting Files/Jello.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = P2BY58D85Z;
-				INFOPLIST_FILE = "Jello/Supporting Files/Info.plist";
+				INFOPLIST_FILE = "Jello/Supporting Files/Jello-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.collaris.Jello;
+				PRODUCT_BUNDLE_IDENTIFIER = com.decode.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -472,6 +606,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B414A10A22F1E16A00D02192 /* Build configuration list for PBXNativeTarget "JelloInject" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B414A10822F1E16A00D02192 /* Debug */,
+				B414A10922F1E16A00D02192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B47DE1451F23FB4300DE9C65 /* Build configuration list for PBXProject "Jello" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

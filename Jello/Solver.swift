@@ -6,6 +6,8 @@
 //  Copyright © 2018 collaris. All rights reserved.
 //
 
+import AppKit
+
 class Solver {
   let warp: Warp
   

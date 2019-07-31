@@ -3,4 +3,3 @@
 //
 
 #import "WindowAdditions.h"
-#import <SpriteKit/SpriteKit.h>
