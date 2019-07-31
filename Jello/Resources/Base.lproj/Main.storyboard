@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14854.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14854.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -620,7 +620,7 @@
                                         <menuItem title="Show Sidebar" keyEquivalent="s" id="kIP-vf-haE">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
-                                                <action selector="toggleSourceList:" target="Ady-hI-5gd" id="iwa-gc-5KM"/>
+                                                <action selector="toggleSidebar:" target="Ady-hI-5gd" id="iwa-gc-5KM"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Enter Full Screen" keyEquivalent="f" id="4J7-dP-txa">
@@ -702,70 +702,37 @@
             </objects>
             <point key="canvasLocation" x="75" y="250"/>
         </scene>
-        <!--Window Controller-->
-        <scene sceneID="04I-VV-bgu">
-            <objects>
-                <windowController storyboardIdentifier="WindowController" id="O31-dM-9SQ" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="psV-Nb-iwh">
-                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="-1244" y="240" width="480" height="270"/>
-                        <rect key="screenRect" x="-1440" y="0.0" width="1440" height="877"/>
-                        <connections>
-                            <outlet property="delegate" destination="O31-dM-9SQ" id="h2m-dq-syo"/>
-                        </connections>
-                    </window>
-                    <connections>
-                        <segue destination="fap-4U-pKW" kind="relationship" relationship="window.shadowedContentViewController" id="QVy-Bu-ET6"/>
-                    </connections>
-                </windowController>
-                <customObject id="P9j-4W-mjb" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="697" y="239"/>
-        </scene>
         <!--View Controller-->
-        <scene sceneID="BFb-nf-LWk">
+        <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="fap-4U-pKW" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="Jello" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="eqy-mr-UG2">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eWh-Mo-q9X">
-                                <rect key="frame" x="213" y="126" width="54" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eWh-Mo-q9X">
+                                <rect key="frame" x="198" y="160" width="54" height="16"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Wobble!" id="w0i-ap-SFo">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sUT-iq-CSF">
-                                <rect key="frame" x="200" y="84" width="81" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sUT-iq-CSF">
+                                <rect key="frame" x="185" y="118" width="81" height="32"/>
                                 <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4zO-ZN-J0Y">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="sUT-iq-CSF" firstAttribute="top" secondItem="eWh-Mo-q9X" secondAttribute="bottom" constant="14" id="HeO-fQ-oed"/>
+                            <constraint firstItem="sUT-iq-CSF" firstAttribute="centerX" secondItem="eqy-mr-UG2" secondAttribute="centerX" id="e7c-zs-x5T"/>
+                            <constraint firstItem="sUT-iq-CSF" firstAttribute="centerX" secondItem="eWh-Mo-q9X" secondAttribute="centerX" id="jy8-aw-GOW"/>
+                            <constraint firstItem="sUT-iq-CSF" firstAttribute="centerY" secondItem="eqy-mr-UG2" secondAttribute="centerY" constant="15" id="xk9-Se-7PS"/>
+                        </constraints>
                     </view>
-                </viewController>
-                <customObject id="LDb-7m-Gfb" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1404" y="214"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="hIz-AP-VOD">
-            <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="Jello" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl" customClass="SKView">
-                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </view>
-                    <connections>
-                        <outlet property="skView" destination="m2S-Jp-Qdl" id="qux-te-cT3"/>
-                    </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>

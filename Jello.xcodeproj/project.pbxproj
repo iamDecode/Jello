@@ -12,10 +12,7 @@
 		B4502AA62116FB8900C6D503 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA52116FB8900C6D503 /* Particle.swift */; };
 		B4502AA82117018B00C6D503 /* Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA72117018B00C6D503 /* Spring.swift */; };
 		B47DE14E1F23FB4300DE9C65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE14D1F23FB4300DE9C65 /* AppDelegate.swift */; };
-		B47DE1501F23FB4300DE9C65 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = B47DE14F1F23FB4300DE9C65 /* GameScene.sks */; };
-		B47DE1541F23FB4300DE9C65 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE1531F23FB4300DE9C65 /* GameScene.swift */; };
 		B47DE1561F23FB4300DE9C65 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE1551F23FB4300DE9C65 /* ViewController.swift */; };
-		B47DE1581F23FB4300DE9C65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B47DE1571F23FB4300DE9C65 /* Assets.xcassets */; };
 		B47DE15B1F23FB4300DE9C65 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B47DE1591F23FB4300DE9C65 /* Main.storyboard */; };
 		B47DE1671F23FB4300DE9C65 /* JelloTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE1661F23FB4300DE9C65 /* JelloTests.swift */; };
 		B47DE1721F23FB8D00DE9C65 /* Warp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47DE1711F23FB8D00DE9C65 /* Warp.swift */; };
@@ -36,17 +33,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B435E79F22F1C78900FF5C55 /* Jello.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Jello.entitlements; sourceTree = "<group>"; };
 		B4502AA52116FB8900C6D503 /* Particle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Particle.swift; sourceTree = "<group>"; };
 		B4502AA72117018B00C6D503 /* Spring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spring.swift; sourceTree = "<group>"; };
 		B47DE14A1F23FB4300DE9C65 /* Jello.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jello.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B47DE14D1F23FB4300DE9C65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		B47DE14F1F23FB4300DE9C65 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		B47DE1531F23FB4300DE9C65 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		B47DE1551F23FB4300DE9C65 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		B47DE1571F23FB4300DE9C65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B47DE15A1F23FB4300DE9C65 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B47DE15C1F23FB4300DE9C65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B47DE15D1F23FB4300DE9C65 /* Jello.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Jello.entitlements; sourceTree = "<group>"; };
 		B47DE1621F23FB4300DE9C65 /* JelloTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JelloTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B47DE1661F23FB4300DE9C65 /* JelloTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JelloTests.swift; sourceTree = "<group>"; };
 		B47DE1681F23FB4300DE9C65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -78,6 +72,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B40D616E22F1C62000E17A65 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */,
+				B47DE15C1F23FB4300DE9C65 /* Info.plist */,
+				B435E79F22F1C78900FF5C55 /* Jello.entitlements */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B40D616F22F1C65100E17A65 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B47DE1591F23FB4300DE9C65 /* Main.storyboard */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		B47DE1411F23FB4300DE9C65 = {
 			isa = PBXGroup;
 			children = (
@@ -101,20 +113,15 @@
 			children = (
 				B49962D52117402700B110BD /* Extensions */,
 				B47DE14D1F23FB4300DE9C65 /* AppDelegate.swift */,
-				B47DE14F1F23FB4300DE9C65 /* GameScene.sks */,
-				B47DE1531F23FB4300DE9C65 /* GameScene.swift */,
 				B47DE1551F23FB4300DE9C65 /* ViewController.swift */,
-				B47DE1571F23FB4300DE9C65 /* Assets.xcassets */,
-				B47DE1591F23FB4300DE9C65 /* Main.storyboard */,
-				B47DE15C1F23FB4300DE9C65 /* Info.plist */,
-				B47DE15D1F23FB4300DE9C65 /* Jello.entitlements */,
 				B4D504941F292493001B8C1D /* WindowAdditions.h */,
 				B4D504951F292493001B8C1D /* WindowAdditions.mm */,
-				B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */,
 				B47DE1711F23FB8D00DE9C65 /* Warp.swift */,
 				B4502AA52116FB8900C6D503 /* Particle.swift */,
 				B4502AA72117018B00C6D503 /* Spring.swift */,
 				B4FCEB63211CDB0D00E78CCF /* Solver.swift */,
+				B40D616F22F1C65100E17A65 /* Resources */,
+				B40D616E22F1C62000E17A65 /* Supporting Files */,
 			);
 			path = Jello;
 			sourceTree = "<group>";
@@ -220,8 +227,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B47DE1501F23FB4300DE9C65 /* GameScene.sks in Resources */,
-				B47DE1581F23FB4300DE9C65 /* Assets.xcassets in Resources */,
 				B47DE15B1F23FB4300DE9C65 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -241,7 +246,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B47DE1561F23FB4300DE9C65 /* ViewController.swift in Sources */,
-				B47DE1541F23FB4300DE9C65 /* GameScene.swift in Sources */,
 				B4FCEB64211CDB0D00E78CCF /* Solver.swift in Sources */,
 				B49962D92117405400B110BD /* CGPoint+Math.swift in Sources */,
 				B4502AA82117018B00C6D503 /* Spring.swift in Sources */,
@@ -396,14 +400,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Jello/Jello.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Jello/Supporting Files/Jello.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = P2BY58D85Z;
-				INFOPLIST_FILE = Jello/Info.plist;
+				INFOPLIST_FILE = "Jello/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.collaris.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Jello-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 			};
@@ -414,14 +418,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Jello/Jello.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Jello/Supporting Files/Jello.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = P2BY58D85Z;
-				INFOPLIST_FILE = Jello/Info.plist;
+				INFOPLIST_FILE = "Jello/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.collaris.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Jello-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
