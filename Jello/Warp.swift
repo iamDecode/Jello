@@ -11,7 +11,7 @@ import SpriteKit
 
 
 internal var GRID_WIDTH = 8
-internal var GRID_HEIGHT = 8
+internal var GRID_HEIGHT = 6
 internal var springK: CGFloat = 7
 internal var friction: CGFloat = 1
 internal let titleBarHeight: CGFloat = 23

@@ -40,6 +40,7 @@ class Solver {
     self.force = particles.reduce(0) { (a,b) in a + abs(b.force.dx) + abs(b.force.dy) }
     
     if self.force > 50000 {
+      print("Forces too large, quitting.")
       NSApplication.shared.terminate(self)
     }
     

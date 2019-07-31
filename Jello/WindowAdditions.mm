@@ -128,7 +128,7 @@ NSTimeInterval previousUpdate = 0.0;
 
   // normal grid
   int GRID_WIDTH = 8;
-  int GRID_HEIGHT = 8;
+  int GRID_HEIGHT = 6;
   CGPointWarp mesh[GRID_HEIGHT][GRID_WIDTH];
   for (int y = 0; y < GRID_HEIGHT; y++) {
     for (int x = 0; x < GRID_WIDTH; x++) {
@@ -141,14 +141,8 @@ NSTimeInterval previousUpdate = 0.0;
 
 - (void) setFrameDirty:(NSRect) frame {
   // This timeout prevents the setFrame and clearwindow to interfere with the previously set warps, which caused glitches.
-  [NSTimer scheduledTimerWithTimeInterval:(1.0f/60.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
+  [NSTimer scheduledTimerWithTimeInterval:(1.0f/30.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
     [self setFrame:frame display:NO];
-    ClearWindowWarp(self);
-  }];
-}
-
-- (void) clearWarp {
-  [NSTimer scheduledTimerWithTimeInterval:(1.0f/2.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
     ClearWindowWarp(self);
   }];
 }
