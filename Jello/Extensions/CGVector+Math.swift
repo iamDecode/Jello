@@ -60,7 +60,11 @@ public func *= (vector: inout CGVector, scalar: CGFloat) {
   vector = vector * scalar
 }
 
-public func * (vector: CGVector, size: CGSize) -> CGPoint { // This is kind of arbitrary. Also spring offset is now CGPoint instaed of vector. Check which types make sense where..
+public func * (vector: CGVector, size: CGSize) -> CGVector {
+  return CGVector(dx: vector.dx * size.width, dy: vector.dy * size.height)
+}
+
+public func * (vector: CGVector, size: CGSize) -> CGPoint {
   return CGPoint(x: vector.dx * size.width, y: vector.dy * size.height)
 }
 

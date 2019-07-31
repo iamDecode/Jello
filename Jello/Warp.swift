@@ -47,7 +47,7 @@ extension NSScreen {
     
     particles = (0 ..< (GRID_WIDTH * GRID_HEIGHT)).map { i in
       let (x, y) = convert(toPosition: i)
-      let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
+      let position: CGPoint = window.frame.origin + (CGVector(dx: x, dy: y).normalized * window.frame.size)
       return Particle(position: position)
     }
 
@@ -123,7 +123,7 @@ extension NSScreen {
 
     for i in (0 ..< (GRID_WIDTH * GRID_HEIGHT)) {
       let (x, y) = convert(toPosition: i)
-      let position: CGPoint = (CGVector(dx: x, dy: y).normalized * window.frame.size) + window.frame.origin
+      let position: CGPoint = window.frame.origin + (CGVector(dx: x, dy: y).normalized * window.frame.size)
       particles[i].position = position
     }
 
@@ -172,7 +172,7 @@ extension NSScreen {
       springs.append(Spring(
           a: particle,
           b: idx,
-          offset: CGPoint(x: point.x - particles[particle].position.x, y: point.y - particles[particle].position.y),
+          offset: CGVector(dx: point.x - particles[particle].position.x, dy: point.y - particles[particle].position.y),
           springK: springK * (1 - pow(distance, 1/2.5))
       ))
     }
