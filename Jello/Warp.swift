@@ -25,6 +25,14 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   return (y * GRID_WIDTH) + x
 }
 
+extension NSScreen {
+  class var current: NSScreen? {
+    let mouseLocation = NSEvent.mouseLocation
+    let screens = NSScreen.screens
+    return (screens.first { NSMouseInRect(mouseLocation, $0.frame, false) })
+  }
+}
+
 
 @objc class Warp: NSObject {
   var window: NSWindow
@@ -33,7 +41,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
   var steps: Double = 0
   var scene: SKScene?
   var timer: Timer? = nil
-  var screenHeight: CGFloat
+  var firstScreen: NSScreen
   var solver: Solver!
   
   @objc init(window: NSWindow) {
@@ -67,7 +75,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
       }
     }
 
-    screenHeight = NSScreen.screens.first!.frame.height
+    firstScreen = NSScreen.screens.first!
     
     super.init()
     
@@ -93,6 +101,19 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
 
     for _ in 0 ..< 10 {
       solver.step(particles: &particles, stepSize: CGFloat(20*delta))
+    }
+
+    // Bounce off top edge
+    if let screen = NSScreen.current {
+      let macosMenuBarHeight: CGFloat = 23.0
+      let offset = (firstScreen.frame.origin.y - screen.frame.origin.y) + macosMenuBarHeight
+      for i in 0..<particles.count {
+        if particles[i].position.y > screen.frame.height - offset {
+          particles[i].position.y = screen.frame.height - offset
+          particles[i].force.dy *= -0.75
+          particles[i].velocity.dy *= -0.75
+        }
+      }
     }
 
     self.window.drawWarp()
@@ -210,7 +231,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
     
     return CGPointWarp(
       local: MeshPoint(x: Float(position.x), y: Float(position.y)),
-      global: MeshPoint(x: Float(round(particle.position.x)), y: Float(screenHeight - round(particle.position.y))) // TODO: use UIScreen.convert
+      global: MeshPoint(x: Float(round(particle.position.x)), y: Float(firstScreen.frame.height - round(particle.position.y))) // TODO: use UIScreen.convert
     )
   }
 
