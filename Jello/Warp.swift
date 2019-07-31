@@ -13,9 +13,7 @@ import SpriteKit
 internal var GRID_WIDTH = 8
 internal var GRID_HEIGHT = 6
 internal var springK: CGFloat = 7
-internal var friction: CGFloat = 1
-internal let titleBarHeight: CGFloat = 23
-
+internal var friction: CGFloat = 1.5
 
 internal func convert(toPosition i: Int) -> (Int, Int) {
   return (i % GRID_WIDTH, i / GRID_WIDTH)
@@ -79,7 +77,7 @@ extension NSScreen {
     
     super.init()
     
-    self.solver = SemiImplicitEuler(warp: self)
+    self.solver = VelocityVerlet(warp: self)
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
   }
@@ -99,8 +97,8 @@ extension NSScreen {
 //      return
 //    }
 
-    for _ in 0 ..< 10 {
-      solver.step(particles: &particles, stepSize: CGFloat(20*delta))
+    for _ in 0 ..< 15 {
+      solver.step(particles: &particles, stepSize: CGFloat(15*delta))
     }
 
     // Bounce off top edge
@@ -110,8 +108,8 @@ extension NSScreen {
       for i in 0..<particles.count {
         if particles[i].position.y > screen.frame.height - offset {
           particles[i].position.y = screen.frame.height - offset
-          particles[i].force.dy *= -0.75
-          particles[i].velocity.dy *= -0.75
+          particles[i].force.dy *= -0.5
+          particles[i].velocity.dy *= -0.5
         }
       }
     }

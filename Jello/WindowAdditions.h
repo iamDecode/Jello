@@ -35,8 +35,6 @@ extern "C" {
 @property (retain, nonatomic) Warp *warp;
 
 - (void) drawWarp;
-- (void) clearWarp;
-- (void) setAlpha:(float) alpha;
 - (void) setFrameDirty:(NSRect) frame;
 
 @end

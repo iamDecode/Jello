@@ -15,7 +15,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
   extern CGError CGSSetWindowTransform(
                                        const CGSConnection cid,
                                        const CGSWindow wid,
@@ -37,20 +36,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-void SetWindowAlpha(NSWindow* window, float alpha) {
-  CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowAlpha(cid, CGSWindow([window windowNumber]), alpha);
-}
-
-void ClearWindowWarp(NSWindow* window) {
-  CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowWarp(cid, CGSWindow([window windowNumber]), 0, 0, NULL);
-}
-
-
-
-
 
 
 @implementation NSWindow (WindowAdditions)
@@ -79,33 +64,24 @@ NSString const *key = @"warp";
   }
   
   [window.warp startDragAt: NSEvent.mouseLocation];
-  
-  [NSThread detachNewThreadSelector:@selector(windowMoves:) toTarget:(NSWindow*)[(NSNotification*)notification object] withObject:notification];
+  [window windowMoves: notification];
 }
 
-
+NSTimer *timer;
 id monitor;
 - (void) windowMoves:(id) notification {
   NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
-  [self performSelectorOnMainThread:@selector(startMoveLoop:) withObject:notification waitUntilDone:YES];
+  timer = [NSTimer scheduledTimerWithTimeInterval:(1.0f / 60.0f) target:self selector:@selector(windowMoved:) userInfo:window repeats:YES];
 
   if (monitor != NULL) { // only disable mouseup monitor when we move a window again, because sometimes the first event does not fully trigger.
     [NSEvent removeMonitor:monitor];
   }
-
   monitor = [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskLeftMouseUp | NSEventMaskRightMouseUp handler:^(NSEvent *event) {
     [window moveStopped];
   }];
 }
 
-NSTimer *timer;
-- (void) startMoveLoop: (id) notification {
-  NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
-  timer = [NSTimer scheduledTimerWithTimeInterval:(1.0f / 60.0f) target:self selector:@selector(windowMoved:) userInfo:window repeats:YES];
-}
-
 NSTimeInterval previousUpdate = 0.0;
-
 - (void) windowMoved:(NSTimer*) timer {
   NSWindow* window = [timer userInfo];
   NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
@@ -141,17 +117,11 @@ NSTimeInterval previousUpdate = 0.0;
 
 - (void) setFrameDirty:(NSRect) frame {
   // This timeout prevents the setFrame and clearwindow to interfere with the previously set warps, which caused glitches.
-  [NSTimer scheduledTimerWithTimeInterval:(1.0f/30.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
+  [NSTimer scheduledTimerWithTimeInterval:(1.0f/10.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
     [self setFrame:frame display:NO];
-    ClearWindowWarp(self);
+    CGSConnection cid = _CGSDefaultConnection();
+    CGSSetWindowWarp(cid, CGSWindow([self windowNumber]), 0, 0, NULL);
   }];
 }
-
-- (void) setAlpha: (float) alpha {
-  CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowAlpha(cid, CGSWindow(self.windowNumber), alpha);
-}
-
-
 
 @end
