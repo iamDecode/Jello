@@ -11,7 +11,7 @@ For a higher resolution demo injected into MacOS, check out [this video](https:/
 ## Usage
 
 - Install SIMBL loader like using [mySIMBL](https://github.com/w0lfschild/mySIMBL) or [MacForge](https://www.macenhance.com/macforge). Note that you currently need to disable System Integrity Protection (SIP) in order for this to work.
-- Download the [latest bundle](releases), or build it yourself (see Building).
+- Download the [latest bundle](https://github.com/iamDecode/Jello/releases), or build it yourself (see Building).
 - Drag bundle onto the app to enable it.
 - Restart apps for Jello to take effect.
 
