@@ -2,11 +2,13 @@
 
 # Jello
 
-A wobbly windows implementation for MacOS inspired by [Compiz](http://www.compiz.org/) for Linux.
+A wobbly windows implementation for MacOS inspired by [Compiz](http://www.compiz.org/) for Linux. 
 
-<img src="https://user-images.githubusercontent.com/1223300/62242320-33379080-b3db-11e9-8031-a7690fc3ef55.gif">
+<sup>*Note: this is only a proof of concept, I am not actively maintaining the project. It may not always be stable, but I am open to contributions :)*</sup>
 
-For a higher resolution demo injected into MacOS, check out [this video](https://youtu.be/G4qud4ySnb8).
+https://user-images.githubusercontent.com/1223300/147920756-0fe92886-6c1f-4351-af43-e3c90741f571.mp4
+
+For a demo injected into MacOS, check out [this video](https://youtu.be/G4qud4ySnb8).
 
 ## Usage
 
