@@ -11,6 +11,8 @@
 #import <SpriteKit/SpriteKit.h>
 #import <objc/runtime.h>
 #import "Jello-Swift.h"
+#import "QuartzCore/QuartzCore.h"
+#import "AppKit/AppKit.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,11 +69,13 @@ NSString const *key = @"warp";
   [window windowMoves: notification];
 }
 
-NSTimer *timer;
 id monitor;
+CADisplayLink *displayLink;
 - (void) windowMoves:(id) notification {
   NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
-  timer = [NSTimer scheduledTimerWithTimeInterval:(1.0f / 60.0f) target:self selector:@selector(windowMoved:) userInfo:window repeats:YES];
+//  timer = [NSTimer scheduledTimerWithTimeInterval:(1.0f / 60.0f) target:self selector:@selector(windowMoved:) userInfo:window repeats:YES];
+    displayLink = [[NSScreen mainScreen] displayLinkWithTarget:self selector:@selector(windowMoved:)];
+    [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 
   if (monitor != NULL) { // only disable mouseup monitor when we move a window again, because sometimes the first event does not fully trigger.
     [NSEvent removeMonitor:monitor];
@@ -82,20 +86,23 @@ id monitor;
 }
 
 NSTimeInterval previousUpdate = 0.0;
-- (void) windowMoved:(NSTimer*) timer {
-  NSWindow* window = [timer userInfo];
+- (void) windowMoved:(CADisplayLink*) displayLink {
+
   NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
   float diff = timestamp - previousUpdate;
 
-  [window.warp dragAt:NSEvent.mouseLocation];
+  [self.warp dragAt:NSEvent.mouseLocation];
   [self.warp stepWithDelta: diff];
-
+//
   previousUpdate = timestamp;
 }
 
 - (void) moveStopped {
-  [timer invalidate];
-  timer = NULL;
+  //[timer invalidate];
+  //timer = NULL;
+//    if (displayLink != NULL) {
+//        [displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+//    }
   [self.warp endDrag];
 }
 
