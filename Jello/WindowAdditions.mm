@@ -73,9 +73,11 @@ id monitor;
 CADisplayLink *displayLink;
 - (void) windowMoves:(id) notification {
   NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
-//  timer = [NSTimer scheduledTimerWithTimeInterval:(1.0f / 60.0f) target:self selector:@selector(windowMoved:) userInfo:window repeats:YES];
-    displayLink = [[NSScreen mainScreen] displayLinkWithTarget:self selector:@selector(windowMoved:)];
+
+  if (displayLink == NULL) {
+    displayLink = [[NSScreen current] displayLinkWithTarget:self selector:@selector(windowMoved:)];
     [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+  }
 
   if (monitor != NULL) { // only disable mouseup monitor when we move a window again, because sometimes the first event does not fully trigger.
     [NSEvent removeMonitor:monitor];
@@ -98,11 +100,10 @@ NSTimeInterval previousUpdate = 0.0;
 }
 
 - (void) moveStopped {
-  //[timer invalidate];
-  //timer = NULL;
-//    if (displayLink != NULL) {
-//        [displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-//    }
+  if (displayLink != NULL) {
+    [displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+    displayLink = NULL;
+  }
   [self.warp endDrag];
 }
 
@@ -123,12 +124,11 @@ NSTimeInterval previousUpdate = 0.0;
 }
 
 - (void) setFrameDirty:(NSRect) frame {
-  // This timeout prevents the setFrame and clearwindow to interfere with the previously set warps, which caused glitches.
-  [NSTimer scheduledTimerWithTimeInterval:(1.0f/10.0f) repeats:false block:^(NSTimer * _Nonnull timer) {
     [self setFrame:frame display:NO];
+    self.viewsNeedDisplay = false;
     CGSConnection cid = _CGSDefaultConnection();
     CGSSetWindowWarp(cid, CGSWindow([self windowNumber]), 0, 0, NULL);
-  }];
+    self.viewsNeedDisplay = false;
 }
 
 @end

@@ -548,6 +548,7 @@
 				DEVELOPMENT_TEAM = P2BY58D85Z;
 				INFOPLIST_FILE = "Jello/Supporting Files/Jello-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.decode.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";
@@ -566,6 +567,7 @@
 				DEVELOPMENT_TEAM = P2BY58D85Z;
 				INFOPLIST_FILE = "Jello/Supporting Files/Jello-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.decode.Jello;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Jello/Supporting Files/Jello-Bridging-Header.h";

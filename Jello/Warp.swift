@@ -23,7 +23,7 @@ internal func convert(toIndex x: Int, y: Int) -> Int {
 }
 
 extension NSScreen {
-  class var current: NSScreen? {
+  @objc class var current: NSScreen? {
     let mouseLocation = NSEvent.mouseLocation
     let screens = NSScreen.screens
     return (screens.first { NSMouseInRect(mouseLocation, $0.frame, false) })
@@ -36,7 +36,6 @@ extension NSScreen {
   var particles: [Particle]
   var springs = [Spring]()
   var steps: Double = 0
-  var timer: Timer? = nil
   var firstScreen: NSScreen
   var solver: Solver!
   
@@ -169,7 +168,7 @@ extension NSScreen {
           springK: springK * (1 - pow(distance, 1/2.5))
       ))
     }
-    
+
     self.window.styleMask.remove(NSWindow.StyleMask.resizable)
   }
 
@@ -183,38 +182,52 @@ extension NSScreen {
     }
   }
 
+  var displayLink: CADisplayLink?
   @objc public func endDrag() {
     let idx = GRID_WIDTH * (GRID_HEIGHT - 1) + GRID_HEIGHT * (GRID_WIDTH - 1)
     springs.removeLast(springs.count - idx)
     if particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { particles.remove(at: GRID_WIDTH * GRID_HEIGHT) }
 
-    if timer != nil { // Dont start a after-drag loop when there is already one running
+    if displayLink != nil { // Dont start a after-drag loop when there is already one running
       return
     }
-    
-    timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { (timer) in
-      // when dragging during the after-drag loop, disable the loop
-      if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
 
-      if self.force < 20 { // TODO: make configurable maybe
-        timer.invalidate()
-        self.timer = nil
-
-        let frame = NSRect(
-          x: self.particles[0].position.x,
-          y: self.particles[0].position.y,
-          width: self.window.frame.width,
-          height: self.window.frame.height
-        )
-
-        self.window.setFrameDirty(frame)
-
-        self.window.styleMask.insert(NSWindow.StyleMask.resizable)
-      } else {
-        self.step(delta: 1/60)
-      }
-    }
+    displayLink = NSScreen.current?.displayLink(target: self, selector: #selector(Warp.postDragUpdate))
+    displayLink?.add(to: RunLoop.current, forMode: .common)
   }
+
+    @objc func postDragUpdate() {
+        // when dragging during the after-drag loop, disable the loop
+        if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
+
+        if self.force < 20 { // TODO: make configurable maybe
+          self.window.moveStopped();
+          displayLink?.remove(from: RunLoop.current, forMode: .common)
+          displayLink = nil
+
+          let frame = NSRect(
+            x: self.particles[0].position.x,
+            y: self.particles[0].position.y,
+            width: self.window.frame.width,
+            height: self.window.frame.height
+          )
+          self.window.setFrameDirty(frame)
+
+          self.window.styleMask.insert(NSWindow.StyleMask.resizable)
+        } else {
+            let frame = NSRect(
+              x: self.particles[0].position.x,
+              y: self.particles[0].position.y,
+              width: self.window.frame.width,
+              height: self.window.frame.height
+            )
+            self.window.setFrameOrigin(self.particles[0].position)
+            self.window.viewsNeedDisplay = false
+
+            self.step(delta: displayLink?.duration ?? 1/60)
+        }
+    }
+
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
     let position: CGPoint = CGVector(dx: x, dy: y).normalized * window.frame.size

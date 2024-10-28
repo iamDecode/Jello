@@ -36,5 +36,6 @@ extern "C" {
 
 - (void) drawWarp;
 - (void) setFrameDirty:(NSRect) frame;
+- (void) moveStopped;
 
 @end
