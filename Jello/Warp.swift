@@ -95,7 +95,7 @@ extension NSScreen {
 
     // Bounce off top edge
     if let screen = NSScreen.current {
-      let macosMenuBarHeight: CGFloat = 23.0
+      let macosMenuBarHeight: CGFloat = 25.0
       let offset = (firstScreen.frame.origin.y - screen.frame.origin.y) + macosMenuBarHeight
       for i in 0..<particles.count {
         if particles[i].position.y > screen.frame.height - offset {
