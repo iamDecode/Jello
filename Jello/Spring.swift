@@ -25,8 +25,12 @@ class Spring {
     let pa = particles[a].position
     let pb = particles[b].position
 
-    let da = CGVector(dx: springK * 0.5 * (pb.x - pa.x - offset.dx), dy: springK * 0.5 * (pb.y - pa.y - offset.dy))
-    let db = CGVector(dx: springK * 0.5 * (pa.x - pb.x + offset.dx), dy: springK * 0.5 * (pa.y - pb.y + offset.dy))
+    var da = CGVector(dx: springK * 0.5 * (pb.x - pa.x - offset.dx), dy: springK * 0.5 * (pb.y - pa.y - offset.dy))
+    var db = CGVector(dx: springK * 0.5 * (pa.x - pb.x + offset.dx), dy: springK * 0.5 * (pa.y - pb.y + offset.dy))
+
+    if (!particles[a].immobile && particles[b].immobile) { da = CGVector(dx: da.dx * 2, dy: da.dy * 2) }
+    if (particles[a].immobile && !particles[b].immobile) { db = CGVector(dx: db.dx * 2, dy: db.dy * 2) }
+    if (particles[a].immobile && particles[b].immobile) { return }
 
     particles[a].apply(force: da)
     particles[b].apply(force: db)
