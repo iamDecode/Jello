@@ -90,13 +90,17 @@ CADisplayLink *displayLink;
 NSTimeInterval previousUpdate = 0.0;
 - (void) windowMoved:(CADisplayLink*) displayLink {
 
-  NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
-  float diff = timestamp - previousUpdate;
+  float diff;
+  if (previousUpdate == 0.0) {
+    diff = 1.0/60.0;
+  } else {
+    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+    diff = timestamp - previousUpdate;
+    previousUpdate = timestamp;
+  }
 
   [self.warp dragAt:NSEvent.mouseLocation];
   [self.warp stepWithDelta: diff];
-//
-  previousUpdate = timestamp;
 }
 
 - (void) moveStopped {

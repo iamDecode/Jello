@@ -90,7 +90,7 @@ extension NSScreen {
 //    }
 
     for _ in 0 ..< 15 {
-      solver.step(particles: &particles, stepSize: CGFloat(15*delta))
+      solver.step(particles: &particles, stepSize: CGFloat(10*delta))
     }
 
     // Bounce off top edge
