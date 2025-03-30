@@ -1,7 +1,6 @@
-<img src="https://user-images.githubusercontent.com/1223300/147921669-698fc843-2240-4e95-b63f-c9afbb85b753.png" width="100">
+<img src="https://user-images.githubusercontent.com/1223300/62239305-eb156f80-b3d4-11e9-8d3f-289b1800987a.png" width="100">
 
 # Jello
-
 
 A wobbly windows implementation for MacOS inspired by [Compiz](http://www.compiz.org/) for Linux. 
 
