@@ -10,7 +10,7 @@ import Foundation
 
 typealias StepResult = (velocity: CGFloat, force: CGFloat)
 
-struct Particle {
+class Particle {
   var position: CGPoint
   var force = CGVector(dx: 0, dy: 0)
   var velocity = CGVector(dx: 0, dy: 0)
@@ -25,7 +25,7 @@ struct Particle {
     self.position = position
   }
 
-  mutating func apply(force: CGVector) {
+  func apply(force: CGVector) {
     self.force += force
   }
 }
