@@ -31,9 +31,73 @@ extension NSScreen {
 }
 
 
+func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Particle], [Spring], Particle) {
+  var particles = (0 ..< (GRID_WIDTH * GRID_HEIGHT)).map { i in
+    let (x, y) = convert(toPosition: i)
+    let position: CGPoint = window.frame.origin + (CGVector(dx: x, dy: y).normalized * window.frame.size)
+    return Particle(position: position)
+  }
+
+  var springs = [Spring]()
+
+  for y in 0..<GRID_HEIGHT {
+    for x in 0..<GRID_WIDTH {
+      if x > 0 {
+        springs.append(Spring(
+          a: convert(toIndex: x - 1, y: y),
+          b: convert(toIndex: x, y: y),
+          offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
+          springK: springK
+        ))
+      }
+
+      if y > 0 {
+        springs.append(Spring(
+          a: convert(toIndex: x, y: y - 1),
+          b: convert(toIndex: x, y: y),
+          offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
+          springK: springK
+        ))
+      }
+    }
+  }
+
+  // mouse particle
+  let mouseParticle: Particle
+  if let _mouseParticle = _mouseParticle {
+    mouseParticle = _mouseParticle
+  } else {
+    let pos = particles[convert(toIndex: GRID_WIDTH/2, y: 0)].position
+    mouseParticle = Particle(position: CGPoint(x: pos.x, y: pos.y))
+    mouseParticle.mass = 1
+    mouseParticle.immobile = true // TODO: just for testing, shuld probably remove
+  }
+  particles.append(mouseParticle)
+
+  let distances = particles.filter({ $0 !== mouseParticle }).prefix(GRID_WIDTH)
+      .map { $0.position.distanceTo(point: mouseParticle.position) }
+
+  let closest = distances
+    .map { ($0 - distances.min()!) / (distances.max()! - distances.min()!) }
+    .enumerated()
+
+  for (offset, distance) in closest {
+    let particle = (GRID_WIDTH * (GRID_HEIGHT - 1)) + offset
+    springs.append(Spring(
+        a: particle,
+        b: particles.firstIndex { $0 === mouseParticle }!, // Index of mouse particle
+        offset: CGVector(dx: mouseParticle.position.x - particles[particle].position.x, dy: mouseParticle.position.y - particles[particle].position.y),
+        springK: springK * (1 - pow(distance, 1/2.5))
+    ))
+  }
+
+  return (particles, springs, mouseParticle)
+}
+
 @objc class Warp: NSObject {
   var window: NSWindow
   var particles: [Particle]
+  var mouseParticle: Particle
   var springs = [Spring]()
   var steps: Double = 0
   var firstScreen: NSScreen
@@ -41,34 +105,11 @@ extension NSScreen {
   
   @objc init(window: NSWindow) {
     self.window = window
-    
-    particles = (0 ..< (GRID_WIDTH * GRID_HEIGHT)).map { i in
-      let (x, y) = convert(toPosition: i)
-      let position: CGPoint = window.frame.origin + (CGVector(dx: x, dy: y).normalized * window.frame.size)
-      return Particle(position: position)
-    }
 
-    for y in 0..<GRID_HEIGHT {
-      for x in 0..<GRID_WIDTH {
-        if x > 0 {
-          springs.append(Spring(
-            a: convert(toIndex: x - 1, y: y),
-            b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
-            springK: springK
-          ))
-        }
-
-        if y > 0 {
-          springs.append(Spring(
-            a: convert(toIndex: x, y: y - 1),
-            b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
-            springK: springK
-          ))
-        }
-      }
-    }
+    let (particles, springs, mouseParticle) = initializeGrid(window: window)
+    self.particles = particles
+    self.springs = springs
+    self.mouseParticle = mouseParticle
 
     firstScreen = NSScreen.screens.first!
     
@@ -90,7 +131,7 @@ extension NSScreen {
 //    }
 
     for _ in 0 ..< 15 {
-      solver.step(particles: &particles, stepSize: CGFloat(10*delta))
+      solver.step(particles: &particles, stepSize: CGFloat(7*delta))
     }
 
     // Bounce off top edge
@@ -120,73 +161,26 @@ extension NSScreen {
     }
 
     // TODO: update offsets rather than recompute them.
-    springs = []
-
-    for y in 0..<GRID_HEIGHT {
-      for x in 0..<GRID_WIDTH {
-        if x > 0 {
-          springs.append(Spring(
-            a: convert(toIndex: x - 1, y: y),
-            b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 1, dy: 0).normalized * window.frame.size,
-            springK: springK
-          ))
-        }
-
-        if y > 0 {
-          springs.append(Spring(
-            a: convert(toIndex: x, y: y - 1),
-            b: convert(toIndex: x, y: y),
-            offset: CGVector(dx: 0, dy: 1).normalized * window.frame.size,
-            springK: springK
-          ))
-        }
-      }
-    }
+    let (_, springs, _) = initializeGrid(window: window, _mouseParticle: mouseParticle)
+    self.springs = springs
   }
 
   @objc public func startDrag(at point: CGPoint) {
-    let distances = particles.prefix(GRID_WIDTH)
-      .map { $0.position.distanceTo(point: point) }
-
-    let closest = distances
-      .map { ($0 - distances.min()!) / (distances.max()! - distances.min()!) }
-      .enumerated()
-      //.sorted( by: { $0.1 < $1.1 } )
-      //.prefix(4)
-
-    let idx = GRID_WIDTH * GRID_HEIGHT
-    particles.append(Particle(position: point))
-    particles[idx].immobile = true
-
-    for (offset, distance) in closest {
-      let particle = (GRID_WIDTH * (GRID_HEIGHT - 1)) + offset
-      springs.append(Spring(
-          a: particle,
-          b: idx,
-          offset: CGVector(dx: point.x - particles[particle].position.x, dy: point.y - particles[particle].position.y),
-          springK: springK * (1 - pow(distance, 1/2.5))
-      ))
-    }
+    mouseParticle.immobile = true
+    mouseParticle.position = NSEvent.mouseLocation
+    let (_, springs, _) = initializeGrid(window: window, _mouseParticle: mouseParticle)
+    self.springs = springs
 
     self.window.styleMask.remove(NSWindow.StyleMask.resizable)
   }
 
   @objc public func drag(at point: CGPoint) {
-    if particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) {
-      particles[GRID_WIDTH * GRID_HEIGHT].position = point
-    } else {
-      // Very dirty workaround
-      startDrag(at: NSEvent.mouseLocation)
-      drag(at: point)
-    }
+    mouseParticle.position = point
   }
 
   var displayLink: CADisplayLink?
   @objc public func endDrag() {
-    let idx = GRID_WIDTH * (GRID_HEIGHT - 1) + GRID_HEIGHT * (GRID_WIDTH - 1)
-    springs.removeLast(springs.count - idx)
-    if particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { particles.remove(at: GRID_WIDTH * GRID_HEIGHT) }
+    mouseParticle.immobile = false
 
     if displayLink != nil { // Dont start a after-drag loop when there is already one running
       return
@@ -198,7 +192,9 @@ extension NSScreen {
 
     @objc func postDragUpdate() {
         // when dragging during the after-drag loop, disable the loop
-        if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
+
+        // FIXME: mouse particle is never removed
+        //if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
 
         if self.force < 20 { // TODO: make configurable maybe
           self.window.moveStopped();
@@ -215,12 +211,6 @@ extension NSScreen {
 
           self.window.styleMask.insert(NSWindow.StyleMask.resizable)
         } else {
-            let frame = NSRect(
-              x: self.particles[0].position.x,
-              y: self.particles[0].position.y,
-              width: self.window.frame.width,
-              height: self.window.frame.height
-            )
             self.window.setFrameOrigin(self.particles[0].position)
             self.window.viewsNeedDisplay = false
 

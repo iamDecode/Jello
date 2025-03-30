@@ -79,9 +79,9 @@ CADisplayLink *displayLink;
     [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
   }
 
-  if (monitor != NULL) { // only disable mouseup monitor when we move a window again, because sometimes the first event does not fully trigger.
-    [NSEvent removeMonitor:monitor];
-  }
+//  if (monitor != NULL) { // only disable mouseup monitor when we move a window again, because sometimes the first event does not fully trigger.
+//    [NSEvent removeMonitor:monitor];
+//  }
   monitor = [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskLeftMouseUp | NSEventMaskRightMouseUp handler:^(NSEvent *event) {
     [window moveStopped];
   }];
