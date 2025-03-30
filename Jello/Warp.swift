@@ -193,8 +193,7 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
     @objc func postDragUpdate() {
         // when dragging during the after-drag loop, disable the loop
 
-        // FIXME: mouse particle is never removed
-        //if self.particles.indices.contains(GRID_WIDTH * GRID_HEIGHT) { return }
+        if mouseParticle.immobile { return }
 
         if self.force < 20 { // TODO: make configurable maybe
           self.window.moveStopped();
