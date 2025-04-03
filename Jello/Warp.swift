@@ -102,7 +102,8 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
   var steps: Double = 0
   var firstScreen: NSScreen
   var solver: Solver!
-  
+  var isResizing = false
+
   @objc init(window: NSWindow) {
     self.window = window
 
@@ -154,6 +155,8 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
     guard let window = notification.object as? NSWindow,
           window == self.window else { return }
 
+    abortWarp()
+
     for i in (0 ..< (GRID_WIDTH * GRID_HEIGHT)) {
       let (x, y) = convert(toPosition: i)
       let position: CGPoint = window.frame.origin + (CGVector(dx: x, dy: y).normalized * window.frame.size)
@@ -170,8 +173,6 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
     mouseParticle.position = NSEvent.mouseLocation
     let (_, springs, _) = initializeGrid(window: window, _mouseParticle: mouseParticle)
     self.springs = springs
-
-    self.window.styleMask.remove(NSWindow.StyleMask.resizable)
   }
 
   @objc public func drag(at point: CGPoint) {
@@ -196,19 +197,7 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
         if mouseParticle.immobile { return }
 
         if self.force < 20 { // TODO: make configurable maybe
-          self.window.moveStopped();
-          displayLink?.remove(from: RunLoop.current, forMode: .common)
-          displayLink = nil
-
-          let frame = NSRect(
-            x: self.particles[0].position.x,
-            y: self.particles[0].position.y,
-            width: self.window.frame.width,
-            height: self.window.frame.height
-          )
-          self.window.setFrameDirty(frame)
-
-          self.window.styleMask.insert(NSWindow.StyleMask.resizable)
+          abortWarp(setFrame: true)
         } else {
             self.window.setFrameOrigin(self.particles[0].position)
             self.window.viewsNeedDisplay = false
@@ -217,6 +206,24 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
         }
     }
 
+  func abortWarp(setFrame: Bool = false) {
+    displayLink?.remove(from: RunLoop.current, forMode: .common)
+    displayLink = nil
+
+    if (setFrame) {
+      let frame = NSRect(
+        x: self.particles[0].position.x,
+        y: self.particles[0].position.y,
+        width: self.window.frame.width,
+        height: self.window.frame.height
+      )
+      self.window.setFrameDirty(frame)
+    } else {
+      self.window.resetWarp()
+    }
+
+    self.window.moveStopped();
+  }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
     let position: CGPoint = CGVector(dx: x, dy: y).normalized * window.frame.size

@@ -135,4 +135,9 @@ NSTimeInterval previousUpdate = 0.0;
     self.viewsNeedDisplay = false;
 }
 
+- (void) resetWarp {
+  CGSConnection cid = _CGSDefaultConnection();
+  CGSSetWindowWarp(cid, CGSWindow([self windowNumber]), 0, 0, NULL);
+}
+
 @end
