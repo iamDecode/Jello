@@ -17,6 +17,8 @@
 		B414A11622F1E36C00D02192 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA52116FB8900C6D503 /* Particle.swift */; };
 		B414A11722F1E36C00D02192 /* Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA72117018B00C6D503 /* Spring.swift */; };
 		B414A11822F1E36C00D02192 /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FCEB63211CDB0D00E78CCF /* Solver.swift */; };
+		B4E0DA1A26A0000100000002 /* ModalSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E0DA1A26A0000100000001 /* ModalSolver.swift */; };
+		B4E0DA1A26A0000100000003 /* ModalSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E0DA1A26A0000100000001 /* ModalSolver.swift */; };
 		B414A11B22F1E38D00D02192 /* JelloInject.m in Sources */ = {isa = PBXBuildFile; fileRef = B414A11A22F1E38D00D02192 /* JelloInject.m */; };
 		B419A4181F2B2C3A00FECC47 /* WindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* WindowAdditions.h */; };
 		B419A4191F2B2C3A00FECC47 /* WindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* WindowAdditions.mm */; };
@@ -70,6 +72,7 @@
 		B4D504951F292493001B8C1D /* WindowAdditions.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowAdditions.mm; sourceTree = "<group>"; };
 		B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jello-Bridging-Header.h"; sourceTree = "<group>"; };
 		B4FCEB63211CDB0D00E78CCF /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
+		B4E0DA1A26A0000100000001 /* ModalSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSolver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +170,7 @@
 				B4502AA52116FB8900C6D503 /* Particle.swift */,
 				B4502AA72117018B00C6D503 /* Spring.swift */,
 				B4FCEB63211CDB0D00E78CCF /* Solver.swift */,
+				B4E0DA1A26A0000100000001 /* ModalSolver.swift */,
 				B414A11922F1E38D00D02192 /* JelloInject.h */,
 				B414A11A22F1E38D00D02192 /* JelloInject.m */,
 				B40D616F22F1C65100E17A65 /* Resources */,
@@ -334,6 +338,7 @@
 				B414A11B22F1E38D00D02192 /* JelloInject.m in Sources */,
 				B414A11722F1E36C00D02192 /* Spring.swift in Sources */,
 				B414A11822F1E36C00D02192 /* Solver.swift in Sources */,
+				B4E0DA1A26A0000100000002 /* ModalSolver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,6 +357,7 @@
 				B419A4181F2B2C3A00FECC47 /* WindowAdditions.h in Sources */,
 				B419A4191F2B2C3A00FECC47 /* WindowAdditions.mm in Sources */,
 				B49962DB2117407600B110BD /* TimeInterval+Additions.swift in Sources */,
+				B4E0DA1A26A0000100000003 /* ModalSolver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

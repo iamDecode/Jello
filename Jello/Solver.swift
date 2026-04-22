@@ -10,14 +10,19 @@ import AppKit
 
 class Solver {
   let warp: Warp
-  
+
   @objc var velocity: CGFloat = 0
   @objc var force: CGFloat = 0
-  
+
   init(warp: Warp) {
     self.warp = warp
   }
-  
+
+  // Number of solver.step(...) calls Warp.step should make per frame.
+  // Explicit sub-stepping is the Verlet stability hack; exact integrators
+  // (ModalSolver) need only one call.
+  var preferredIterations: Int { return 1 }
+
   func step(particles: inout [Particle], stepSize: CGFloat) {
     // Not implemented
   }
@@ -90,6 +95,8 @@ class SemiImplicitEuler: Solver {
 }
 
 class VelocityVerlet: Solver {
+  override var preferredIterations: Int { return 15 }
+
   override func step(particles: inout [Particle], stepSize: CGFloat) {
     let deriv = self.derivEval(particles: particles)
     

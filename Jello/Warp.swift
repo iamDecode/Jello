@@ -115,24 +115,23 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
     firstScreen = NSScreen.screens.first!
     
     super.init()
-    
-    self.solver = VelocityVerlet(warp: self)
+
+    self.solver = ModalSolver(warp: self)
 
     NotificationCenter.default.addObserver(self, selector: #selector(Warp.didResize), name: NSWindow.didResizeNotification, object: nil)
   }
 
   @objc func step(delta: TimeInterval) {
     if delta > 0.5 { return }
-//    self.steps += delta.milliseconds / 3
-//    let steps = floor(self.steps)
-//    self.steps -= steps
-//
-//    if steps.isZero {
-//      return
-//    }
 
-    for _ in 0 ..< 15 {
-      solver.step(particles: &particles, stepSize: CGFloat(7*delta))
+    // Keep total simulated time per frame constant across solvers:
+    // Verlet uses 15 substeps of 7·delta (legacy tuning); exact integrators
+    // advance the whole 105·delta in a single call.
+    let totalSimTime = CGFloat(7 * delta * 15.0)
+    let substeps = max(1, solver.preferredIterations)
+    let dtPerStep = totalSimTime / CGFloat(substeps)
+    for _ in 0 ..< substeps {
+      solver.step(particles: &particles, stepSize: dtPerStep)
     }
 
     // Bounce off top edge
@@ -166,13 +165,30 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
     // TODO: update offsets rather than recompute them.
     let (_, springs, _) = initializeGrid(window: window, _mouseParticle: mouseParticle)
     self.springs = springs
+
+    (solver as? ModalSolver)?.updateRestPositions()
   }
 
   @objc public func startDrag(at point: CGPoint) {
     mouseParticle.immobile = true
     mouseParticle.position = NSEvent.mouseLocation
+
+    // Snap grid to a fresh lattice anchored on window.origin. Required because
+    // ModalSolver assumes spring offsets are consistent lattice differences —
+    // if the previous drag left particles off-lattice, the offsets captured
+    // below in initializeGrid would encode deformed rest, and modal equilibrium
+    // would no longer correspond to zero spring force (→ post-drag settling
+    // never reaches force < 20, window gets stuck).
+    for i in 0 ..< (GRID_WIDTH * GRID_HEIGHT) {
+      let (gx, gy) = convert(toPosition: i)
+      particles[i].position = window.frame.origin + (CGVector(dx: gx, dy: gy).normalized * window.frame.size)
+      particles[i].velocity = CGVector(dx: 0, dy: 0)
+    }
+
     let (_, springs, _) = initializeGrid(window: window, _mouseParticle: mouseParticle)
     self.springs = springs
+
+    (solver as? ModalSolver)?.rebuildForDrag()
   }
 
   @objc public func drag(at point: CGPoint) {
@@ -182,6 +198,28 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
   var displayLink: CADisplayLink?
   @objc public func endDrag() {
     mouseParticle.immobile = false
+
+    // Mouse was pinned during drag (velocity=0). Blend in the weighted average
+    // of attached grid particles' velocities so the post-drag dynamics don't
+    // snap the mouse backward against the moving grid. Weights = mouse-spring
+    // stiffness, which already encodes distance-based coupling from startDrag.
+    let mouseIdx = GRID_WIDTH * GRID_HEIGHT
+    var totalWeight: CGFloat = 0
+    var weightedVx: CGFloat = 0
+    var weightedVy: CGFloat = 0
+    for spring in springs {
+      let involvesMouse = (spring.a == mouseIdx) || (spring.b == mouseIdx)
+      if !involvesMouse { continue }
+      let gridIdx = (spring.a == mouseIdx) ? spring.b : spring.a
+      let w = spring.springK
+      totalWeight += w
+      weightedVx += w * particles[gridIdx].velocity.dx
+      weightedVy += w * particles[gridIdx].velocity.dy
+    }
+    if totalWeight > 0 {
+      mouseParticle.velocity.dx = weightedVx / totalWeight
+      mouseParticle.velocity.dy = weightedVy / totalWeight
+    }
 
     // Align particles[0] with NSFrame.origin via uniform translation so the
     // first post-drag tick's setFrameOrigin(particles[0]) doesn't snap NSFrame
@@ -194,20 +232,30 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
       particles[i].position.y += dy
     }
 
+    (solver as? ModalSolver)?.rebuildForFree()
+
     if displayLink != nil { // Dont start a after-drag loop when there is already one running
       return
     }
 
+    postDragFrames = 0
     displayLink = NSScreen.current?.displayLink(target: self, selector: #selector(Warp.postDragUpdate))
     displayLink?.add(to: RunLoop.current, forMode: .common)
   }
+
+    private var postDragFrames: Int = 0
+    private let postDragMaxFrames: Int = 300 // ~5s @ 60Hz — safety net so a
+                                             // non-settling solver can't trap
+                                             // the window in a warped state.
 
     @objc func postDragUpdate() {
         // when dragging during the after-drag loop, disable the loop
 
         if mouseParticle.immobile { return }
 
-        if self.force < 20 { // TODO: make configurable maybe
+        postDragFrames += 1
+
+        if self.force < 20 || postDragFrames >= postDragMaxFrames { // TODO: make configurable maybe
           abortWarp(setFrame: true)
         } else {
             self.window.setFrameOrigin(self.particles[0].position)
@@ -233,7 +281,6 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
       self.window.resetWarp()
     }
 
-    self.window.moveStopped();
   }
 
   @objc public func meshPoint(x: Int, y: Int) -> CGPointWarp {
