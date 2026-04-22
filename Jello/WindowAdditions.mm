@@ -53,12 +53,50 @@ NSString const *key = @"warp";
 }
 
 
+// macOS 26 clips CGSSetWindowWarp output while the OS drag pipeline is active.
+// AppDelegate sets isMovable=NO on our windows so that pipeline never engages;
+// we drive motion ourselves from this local NSEvent monitor.
+static NSWindow *g_dragWindow = nil;
+static NSPoint   g_mouseStart;
+static NSPoint   g_originStart;
+
+
 + (void)load {
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willMove:) name:NSWindowWillMoveNotification object:nil];
+
+  [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDragged | NSEventMaskLeftMouseUp)
+                                        handler:^NSEvent *(NSEvent *event) {
+    if (event.type == NSEventTypeLeftMouseUp && g_dragWindow) {
+      NSWindow *w = g_dragWindow;
+      g_dragWindow = nil;
+      [w moveStopped];
+      return nil;
+    }
+
+    if (event.type == NSEventTypeLeftMouseDragged) {
+      if (g_dragWindow) return nil;
+
+      NSWindow *w = event.window;
+      if (!w || w.isMovable) return event;
+      NSRect content = [w contentRectForFrameRect:w.frame];
+      if (event.locationInWindow.y < content.size.height) return event;
+
+      g_dragWindow = w;
+      g_mouseStart = NSEvent.mouseLocation;
+      g_originStart = w.frame.origin;
+      if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
+      [w.warp startDragAt:g_mouseStart];
+      [w jelloBeginDrag];
+      return nil;
+    }
+
+    return event;
+  }];
 }
 
 + (void) willMove:(id) notification {
   NSWindow* window = (NSWindow*)[(NSNotification*)notification object];
+  if (window == g_dragWindow) return;
   
   // Fallback for whatsapp and IDEA
   if (window.warp == NULL) {
@@ -87,6 +125,13 @@ CADisplayLink *displayLink;
   }];
 }
 
+- (void) jelloBeginDrag {
+  if (displayLink == NULL) {
+    displayLink = [[NSScreen current] displayLinkWithTarget:self selector:@selector(windowMoved:)];
+    [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+  }
+}
+
 NSTimeInterval previousUpdate = 0.0;
 - (void) windowMoved:(CADisplayLink*) displayLink {
 
@@ -99,7 +144,14 @@ NSTimeInterval previousUpdate = 0.0;
     previousUpdate = timestamp;
   }
 
-  [self.warp dragAt:NSEvent.mouseLocation];
+  NSPoint mouse = NSEvent.mouseLocation;
+  if (g_dragWindow == self) {
+    [self setFrameOrigin:NSMakePoint(
+      g_originStart.x + (mouse.x - g_mouseStart.x),
+      g_originStart.y + (mouse.y - g_mouseStart.y))];
+  }
+
+  [self.warp dragAt:mouse];
   [self.warp stepWithDelta: diff];
 }
 

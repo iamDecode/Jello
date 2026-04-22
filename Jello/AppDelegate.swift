@@ -14,7 +14,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
+        // macOS 26's OS-initiated drag pipeline clips CGSSetWindowWarp output
+        // while the window is being moved. Disable OS drag so our event hook
+        // in WindowAdditions can drive motion via setFrameOrigin, which is not
+        // subject to that clip.
+        for window in NSApp.windows {
+            window.isMovable = false
+        }
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
