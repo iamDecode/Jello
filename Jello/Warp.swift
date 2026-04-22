@@ -183,6 +183,17 @@ func initializeGrid(window: NSWindow, _mouseParticle: Particle? = nil) -> ([Part
   @objc public func endDrag() {
     mouseParticle.immobile = false
 
+    // Align particles[0] with NSFrame.origin via uniform translation so the
+    // first post-drag tick's setFrameOrigin(particles[0]) doesn't snap NSFrame
+    // backward by the drag-lag amount. Velocities and relative positions are
+    // untouched, so throw momentum and wobble shape are preserved.
+    let dx = window.frame.origin.x - particles[0].position.x
+    let dy = window.frame.origin.y - particles[0].position.y
+    for i in particles.indices {
+      particles[i].position.x += dx
+      particles[i].position.y += dy
+    }
+
     if displayLink != nil { // Dont start a after-drag loop when there is already one running
       return
     }
