@@ -53,44 +53,119 @@ NSString const *key = @"warp";
 }
 
 
-// macOS 26 clips CGSSetWindowWarp output while the OS drag pipeline is active.
-// AppDelegate sets isMovable=NO on our windows so that pipeline never engages;
-// we drive motion ourselves from this local NSEvent monitor.
+// Two independent drag detection paths coexist:
+//
+//   A) Title-bar drag on standard NSWindow apps (Illustrator, TextEdit, …).
+//      The local LeftMouseDragged monitor intercepts the event BEFORE the OS
+//      drag pipeline engages, driving motion ourselves via setFrameOrigin.
+//      This is the only path that works on macOS 26 for apps that use the
+//      OS drag pipeline — the pipeline clips CGSSetWindowWarp output while
+//      active, so we must bypass it.
+//
+//   B) Programmatic drag on Electron / Chromium / custom-chrome apps
+//      (FreeTube, Teams, VS Code, …). These apps call setFrame: themselves
+//      from Chromium's mouseDown handler — the OS drag pipeline is never
+//      involved and `isMovable` has no effect. We detect drag-via-setFrame
+//      by observing NSWindowDidMoveNotification while the left mouse button
+//      is held down.
 static NSWindow *g_dragWindow = nil;
+static BOOL      g_ownsMotion = NO;     // YES for path A, NO for path B
+static BOOL      g_leftMouseDown = NO;
 static NSPoint   g_mouseStart;
 static NSPoint   g_originStart;
+static id        g_globalMouseUpMonitor = nil;
+
+
+static void jelloEndActiveDrag() {
+  if (!g_dragWindow) return;
+  NSWindow *w = g_dragWindow;
+  g_dragWindow = nil;
+  g_ownsMotion = NO;
+  [w moveStopped];
+  if (g_globalMouseUpMonitor) {
+    [NSEvent removeMonitor:g_globalMouseUpMonitor];
+    g_globalMouseUpMonitor = nil;
+  }
+}
 
 
 + (void)load {
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willMove:) name:NSWindowWillMoveNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(willMove:)
+                                               name:NSWindowWillMoveNotification
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(didMove:)
+                                               name:NSWindowDidMoveNotification
+                                             object:nil];
 
-  [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDragged | NSEventMaskLeftMouseUp)
+  [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown
+                                                 | NSEventMaskLeftMouseDragged
+                                                 | NSEventMaskLeftMouseUp)
                                         handler:^NSEvent *(NSEvent *event) {
-    if (event.type == NSEventTypeLeftMouseUp && g_dragWindow) {
-      NSWindow *w = g_dragWindow;
-      g_dragWindow = nil;
-      [w moveStopped];
-      return nil;
+    if (event.type == NSEventTypeLeftMouseDown) {
+      g_leftMouseDown = YES;
+      return event;
     }
 
-    if (event.type == NSEventTypeLeftMouseDragged) {
-      if (g_dragWindow) return nil;
-
-      NSWindow *w = event.window;
-      if (!w || w.isMovable) return event;
-      NSRect content = [w contentRectForFrameRect:w.frame];
-      if (event.locationInWindow.y < content.size.height) return event;
-
-      g_dragWindow = w;
-      g_mouseStart = NSEvent.mouseLocation;
-      g_originStart = w.frame.origin;
-      if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
-      [w.warp startDragAt:g_mouseStart];
-      [w jelloBeginDrag];
-      return nil;
+    if (event.type == NSEventTypeLeftMouseUp) {
+      g_leftMouseDown = NO;
+      BOOL wasOwned = g_ownsMotion;
+      jelloEndActiveDrag();
+      // Owned drags consume the mouse-up (we've been returning drag events
+      // as nil, so letting mouse-up through would drop selection/focus
+      // state). Path-B drags (app-owned motion) must pass through so the
+      // app can run its own end-of-drag logic.
+      return wasOwned ? nil : event;
     }
 
-    return event;
+    // LeftMouseDragged
+    if (g_dragWindow) {
+      // A path-A drag in flight — continue consuming so the OS doesn't
+      // also try to drag. For path-B, let the app see the events.
+      return g_ownsMotion ? nil : event;
+    }
+
+    NSWindow *w = event.window;
+    if (!w) return event;
+    NSRect content = [w contentRectForFrameRect:w.frame];
+    // Only treat drags that start in the title-bar strip as path-A.
+    // For fullSize-content / borderless / Electron frameless windows
+    // content.height == frame.height, so this check naturally skips them
+    // and they'll fall through to path B via didMove:.
+    if (event.locationInWindow.y < content.size.height) return event;
+
+    g_dragWindow = w;
+    g_ownsMotion = YES;
+    g_mouseStart = NSEvent.mouseLocation;
+    g_originStart = w.frame.origin;
+    if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
+    [w.warp startDragAt:g_mouseStart];
+    [w jelloBeginDrag];
+    NSLog(@"[Jello] path A drag start on %@", w);
+    return nil;
+  }];
+}
+
++ (void)didMove:(NSNotification *)note {
+  if (!g_leftMouseDown) return;             // programmatic move, not a drag
+  NSWindow *w = (NSWindow *)note.object;
+  if (!w) return;
+  if (g_dragWindow == w) return;            // already handling this window
+  if (g_dragWindow) return;                 // another window already dragging
+
+  g_dragWindow = w;
+  g_ownsMotion = NO;                        // app drives motion; we only wobble
+  if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
+  [w.warp startDragAt:NSEvent.mouseLocation];
+  [w jelloBeginDrag];
+  NSLog(@"[Jello] path B drag start on %@", w);
+
+  // Mouse-up might land outside this app (e.g. over the dock) — catch it too.
+  g_globalMouseUpMonitor = [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskLeftMouseUp
+                                                                  handler:^(NSEvent *event) {
+    g_leftMouseDown = NO;
+    jelloEndActiveDrag();
   }];
 }
 
@@ -145,7 +220,7 @@ NSTimeInterval previousUpdate = 0.0;
   }
 
   NSPoint mouse = NSEvent.mouseLocation;
-  if (g_dragWindow == self) {
+  if (g_dragWindow == self && g_ownsMotion) {
     [self setFrameOrigin:NSMakePoint(
       g_originStart.x + (mouse.x - g_mouseStart.x),
       g_originStart.y + (mouse.y - g_mouseStart.y))];

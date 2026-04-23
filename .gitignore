@@ -1,0 +1,12 @@
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+
+# Vendored binary dependency; fetched by third_party/frida/fetch.sh
+third_party/frida/libfrida-core.a
+third_party/frida/frida-core.h
+
+# Local backups
+*.bak

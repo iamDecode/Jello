@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		11A0A803EDADE568CE1BAF43 /* FridaDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9751ED2483F5E9EC7C26486B /* FridaDevice.swift */; };
+		23D168507469D528F8594502 /* FridaScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556BBC4F58DF1C77B1373FB /* FridaScript.swift */; };
+		4A0EBBD1612EEB1FE4D8C190 /* Frida.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A1C104D8C19DABD3F2CAAB /* Frida.swift */; };
+		5645C48A6B584A3ABE1B2867 /* libfrida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50C45808D23D3531E8663BAB /* libfrida-core.a */; };
+		6E15B508BBEC29893AFB4D34 /* jello.svg in Resources */ = {isa = PBXBuildFile; fileRef = 03EF9B7D0C46513102B7BC17 /* jello.svg */; };
+		7700D8ADAF771E7F7365DC9E /* FridaSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7BDC6CD5661424297FAAC7 /* FridaSession.swift */; };
 		B414A10D22F1E19800D02192 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B414A10C22F1E19800D02192 /* Cocoa.framework */; };
 		B414A11022F1E36C00D02192 /* CGVector+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962D62117404300B110BD /* CGVector+Math.swift */; };
 		B414A11122F1E36C00D02192 /* CGPoint+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962D82117405400B110BD /* CGPoint+Math.swift */; };
@@ -17,8 +23,6 @@
 		B414A11622F1E36C00D02192 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA52116FB8900C6D503 /* Particle.swift */; };
 		B414A11722F1E36C00D02192 /* Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4502AA72117018B00C6D503 /* Spring.swift */; };
 		B414A11822F1E36C00D02192 /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FCEB63211CDB0D00E78CCF /* Solver.swift */; };
-		B4E0DA1A26A0000100000002 /* ModalSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E0DA1A26A0000100000001 /* ModalSolver.swift */; };
-		B4E0DA1A26A0000100000003 /* ModalSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E0DA1A26A0000100000001 /* ModalSolver.swift */; };
 		B414A11B22F1E38D00D02192 /* JelloInject.m in Sources */ = {isa = PBXBuildFile; fileRef = B414A11A22F1E38D00D02192 /* JelloInject.m */; };
 		B419A4181F2B2C3A00FECC47 /* WindowAdditions.h in Sources */ = {isa = PBXBuildFile; fileRef = B4D504941F292493001B8C1D /* WindowAdditions.h */; };
 		B419A4191F2B2C3A00FECC47 /* WindowAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D504951F292493001B8C1D /* WindowAdditions.mm */; };
@@ -32,10 +36,23 @@
 		B49962D72117404300B110BD /* CGVector+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962D62117404300B110BD /* CGVector+Math.swift */; };
 		B49962D92117405400B110BD /* CGPoint+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962D82117405400B110BD /* CGPoint+Math.swift */; };
 		B49962DB2117407600B110BD /* TimeInterval+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49962DA2117407600B110BD /* TimeInterval+Additions.swift */; };
+		B4E0DA1A26A0000100000002 /* ModalSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E0DA1A26A0000100000001 /* ModalSolver.swift */; };
+		B4E0DA1A26A0000100000003 /* ModalSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E0DA1A26A0000100000001 /* ModalSolver.swift */; };
 		B4FCEB64211CDB0D00E78CCF /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FCEB63211CDB0D00E78CCF /* Solver.swift */; };
+		D620768CC1AA443869B8E6F8 /* JelloInject.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B414A10522F1E16A00D02192 /* JelloInject.bundle */; };
+		D920E46C78FB5E7F01B5E5FA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EBEA245B317F1E149B56F34 /* Cocoa.framework */; };
+		E967F426AFBEBEA0528C9041 /* InjectorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD700CBFCBF1189BBBE5A3 /* InjectorController.swift */; };
+		FDF97AA3EF21779D38685352 /* JelloInjectorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D9E7291B6E9EF63FDEC78A /* JelloInjectorApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6661A618D0F407B8C3D40527 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B47DE1421F23FB4300DE9C65 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B414A10422F1E16A00D02192;
+			remoteInfo = JelloInject;
+		};
 		B47DE1631F23FB4300DE9C65 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B47DE1421F23FB4300DE9C65 /* Project object */;
@@ -46,6 +63,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03EF9B7D0C46513102B7BC17 /* jello.svg */ = {isa = PBXFileReference; includeInIndex = 1; path = jello.svg; sourceTree = "<group>"; };
+		07BF3FAD3FBD4CAE74D9CAFD /* JelloInjector-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JelloInjector-Bridging-Header.h"; sourceTree = "<group>"; };
+		2556BBC4F58DF1C77B1373FB /* FridaScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FridaScript.swift; sourceTree = "<group>"; };
+		2DE7CFA0AB20B86595DF4023 /* JelloInjector.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = JelloInjector.entitlements; sourceTree = "<group>"; };
+		3D0101807C815E23C3497C20 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		50C45808D23D3531E8663BAB /* libfrida-core.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; path = "libfrida-core.a"; sourceTree = "<group>"; };
+		62D9E7291B6E9EF63FDEC78A /* JelloInjectorApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JelloInjectorApp.swift; sourceTree = "<group>"; };
+		8EBEA245B317F1E149B56F34 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		8F7BDC6CD5661424297FAAC7 /* FridaSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FridaSession.swift; sourceTree = "<group>"; };
+		9751ED2483F5E9EC7C26486B /* FridaDevice.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FridaDevice.swift; sourceTree = "<group>"; };
 		B414A10522F1E16A00D02192 /* JelloInject.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JelloInject.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B414A10722F1E16A00D02192 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B414A10C22F1E19800D02192 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -70,12 +97,24 @@
 		B49962DA2117407600B110BD /* TimeInterval+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Additions.swift"; sourceTree = "<group>"; };
 		B4D504941F292493001B8C1D /* WindowAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowAdditions.h; sourceTree = "<group>"; };
 		B4D504951F292493001B8C1D /* WindowAdditions.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowAdditions.mm; sourceTree = "<group>"; };
+		B4E0DA1A26A0000100000001 /* ModalSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSolver.swift; sourceTree = "<group>"; };
 		B4EFF92B1F27C941003648C9 /* Jello-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Jello-Bridging-Header.h"; sourceTree = "<group>"; };
 		B4FCEB63211CDB0D00E78CCF /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
-		B4E0DA1A26A0000100000001 /* ModalSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSolver.swift; sourceTree = "<group>"; };
+		B7A1C104D8C19DABD3F2CAAB /* Frida.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Frida.swift; sourceTree = "<group>"; };
+		D9AD700CBFCBF1189BBBE5A3 /* InjectorController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InjectorController.swift; sourceTree = "<group>"; };
+		FF696438334A7AF16A51AEBB /* JelloInjector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JelloInjector.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3163837E0AC3C7AC4374446A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D920E46C78FB5E7F01B5E5FA /* Cocoa.framework in Frameworks */,
+				5645C48A6B584A3ABE1B2867 /* libfrida-core.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B414A10222F1E16A00D02192 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -101,6 +140,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		37B6CE2E80CDA7616557C6C6 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				8EBEA245B317F1E149B56F34 /* Cocoa.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
+		388D0BB7186AE8FEE98B7A4A /* third_party */ = {
+			isa = PBXGroup;
+			children = (
+				74A2F5A2102FBED38226AEF4 /* frida */,
+			);
+			name = third_party;
+			path = third_party;
+			sourceTree = "<group>";
+		};
+		74A2F5A2102FBED38226AEF4 /* frida */ = {
+			isa = PBXGroup;
+			children = (
+				50C45808D23D3531E8663BAB /* libfrida-core.a */,
+			);
+			name = frida;
+			path = frida;
+			sourceTree = "<group>";
+		};
+		8B31235E4F5B43C475F86F54 /* Frida */ = {
+			isa = PBXGroup;
+			children = (
+				B7A1C104D8C19DABD3F2CAAB /* Frida.swift */,
+				9751ED2483F5E9EC7C26486B /* FridaDevice.swift */,
+				8F7BDC6CD5661424297FAAC7 /* FridaSession.swift */,
+				2556BBC4F58DF1C77B1373FB /* FridaScript.swift */,
+			);
+			name = Frida;
+			path = Frida;
+			sourceTree = "<group>";
+		};
 		B40D616E22F1C62000E17A65 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +210,7 @@
 			children = (
 				B414A11C22F1E40A00D02192 /* CoreGraphics.framework */,
 				B414A10C22F1E19800D02192 /* Cocoa.framework */,
+				37B6CE2E80CDA7616557C6C6 /* OS X */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -145,6 +223,8 @@
 				B414A10622F1E16A00D02192 /* JelloInject */,
 				B47DE14B1F23FB4300DE9C65 /* Products */,
 				B414A10B22F1E19800D02192 /* Frameworks */,
+				EC55F86A50948442E8EE0D57 /* JelloInjector */,
+				388D0BB7186AE8FEE98B7A4A /* third_party */,
 			);
 			sourceTree = "<group>";
 		};
@@ -154,6 +234,7 @@
 				B47DE14A1F23FB4300DE9C65 /* Jello.app */,
 				B47DE1621F23FB4300DE9C65 /* JelloTests.xctest */,
 				B414A10522F1E16A00D02192 /* JelloInject.bundle */,
+				FF696438334A7AF16A51AEBB /* JelloInjector.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -198,9 +279,43 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		EC55F86A50948442E8EE0D57 /* JelloInjector */ = {
+			isa = PBXGroup;
+			children = (
+				8B31235E4F5B43C475F86F54 /* Frida */,
+				62D9E7291B6E9EF63FDEC78A /* JelloInjectorApp.swift */,
+				D9AD700CBFCBF1189BBBE5A3 /* InjectorController.swift */,
+				07BF3FAD3FBD4CAE74D9CAFD /* JelloInjector-Bridging-Header.h */,
+				3D0101807C815E23C3497C20 /* Info.plist */,
+				2DE7CFA0AB20B86595DF4023 /* JelloInjector.entitlements */,
+				03EF9B7D0C46513102B7BC17 /* jello.svg */,
+			);
+			name = JelloInjector;
+			path = JelloInjector;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		893942CC1AF9A566E12B9DFB /* JelloInjector */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 63074F08742B4D41A5E0E573 /* Build configuration list for PBXNativeTarget "JelloInjector" */;
+			buildPhases = (
+				2F6FD9C6BAE6C8C3C0EA66BC /* Fetch Frida devkit */,
+				9DADEF107969FFA809DF3D59 /* Sources */,
+				3163837E0AC3C7AC4374446A /* Frameworks */,
+				016B2DAC3F559B6AFA2AFD07 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				88B6D3FE84CB882829C9DB4D /* PBXTargetDependency */,
+			);
+			name = JelloInjector;
+			productName = JelloInjector;
+			productReference = FF696438334A7AF16A51AEBB /* JelloInjector.app */;
+			productType = "com.apple.product-type.application";
+		};
 		B414A10422F1E16A00D02192 /* JelloInject */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B414A10A22F1E16A00D02192 /* Build configuration list for PBXNativeTarget "JelloInject" */;
@@ -294,11 +409,21 @@
 				B47DE1491F23FB4300DE9C65 /* Jello */,
 				B47DE1611F23FB4300DE9C65 /* JelloTests */,
 				B414A10422F1E16A00D02192 /* JelloInject */,
+				893942CC1AF9A566E12B9DFB /* JelloInjector */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		016B2DAC3F559B6AFA2AFD07 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D620768CC1AA443869B8E6F8 /* JelloInject.bundle in Resources */,
+				6E15B508BBEC29893AFB4D34 /* jello.svg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B414A10322F1E16A00D02192 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -323,7 +448,41 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2F6FD9C6BAE6C8C3C0EA66BC /* Fetch Frida devkit */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Fetch Frida devkit";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nif [ ! -f \"$SRCROOT/third_party/frida/libfrida-core.a\" ]; then\n  \"$SRCROOT/third_party/frida/fetch.sh\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		9DADEF107969FFA809DF3D59 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FDF97AA3EF21779D38685352 /* JelloInjectorApp.swift in Sources */,
+				E967F426AFBEBEA0528C9041 /* InjectorController.swift in Sources */,
+				4A0EBBD1612EEB1FE4D8C190 /* Frida.swift in Sources */,
+				11A0A803EDADE568CE1BAF43 /* FridaDevice.swift in Sources */,
+				7700D8ADAF771E7F7365DC9E /* FridaSession.swift in Sources */,
+				23D168507469D528F8594502 /* FridaScript.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B414A10122F1E16A00D02192 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -372,6 +531,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		88B6D3FE84CB882829C9DB4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JelloInject;
+			target = B414A10422F1E16A00D02192 /* JelloInject */;
+			targetProxy = 6661A618D0F407B8C3D40527 /* PBXContainerItemProxy */;
+		};
 		B47DE1641F23FB4300DE9C65 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B47DE1491F23FB4300DE9C65 /* Jello */;
@@ -391,6 +556,48 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		11BDD8706720DFBA4E319D16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = JelloInjector/JelloInjector.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = P2BY58D85Z;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/third_party/frida",
+				);
+				INFOPLIST_FILE = JelloInjector/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/third_party/frida",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lresolv",
+					"-lbsm",
+					"-framework",
+					Security,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.decode.JelloInjector;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "JelloInjector/JelloInjector-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
 		B414A10822F1E16A00D02192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -617,9 +824,59 @@
 			};
 			name = Release;
 		};
+		D014A858693889F822680AF8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = JelloInjector/JelloInjector.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = P2BY58D85Z;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/third_party/frida",
+				);
+				INFOPLIST_FILE = JelloInjector/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/third_party/frida",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lresolv",
+					"-lbsm",
+					"-framework",
+					Security,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.decode.JelloInjector;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "JelloInjector/JelloInjector-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		63074F08742B4D41A5E0E573 /* Build configuration list for PBXNativeTarget "JelloInjector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D014A858693889F822680AF8 /* Release */,
+				11BDD8706720DFBA4E319D16 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B414A10A22F1E16A00D02192 /* Build configuration list for PBXNativeTarget "JelloInject" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
