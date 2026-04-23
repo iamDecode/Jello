@@ -48,6 +48,10 @@ final class FridaScript {
     frida_script_unload_sync(script, nil, nil)
   }
 
+  func post(_ message: String) {
+    frida_script_post(script, message, nil)
+  }
+
   deinit {
     handlerBox?.release()
     g_object_unref(UnsafeMutableRawPointer(script))

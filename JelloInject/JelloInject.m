@@ -7,8 +7,11 @@
 //
 
 #import "JelloInject.h"
+#import "WindowAdditions.h"
 
-static JelloInject* plugin = nil;
+static JelloInject *plugin = nil;
+static id g_becomeKeyObserver = nil;
+static BOOL g_initialized = NO;
 
 static void JelloDiag(NSString *msg) {
   NSString *line = [NSString stringWithFormat:@"[JelloInject pid=%d] %@\n", getpid(), msg];
@@ -19,48 +22,87 @@ static void JelloDiag(NSString *msg) {
   fclose(fp);
 }
 
+extern void JelloSetupDragHooks(void);
+extern void JelloTeardownDragHooks(void);
+
+void JelloInjectInit(void);
+void JelloInjectTeardown(void);
+
+@interface JelloInject ()
++ (JelloInject*)sharedInstance;
+- (void)loadPlugin;
+- (void)unloadPlugin;
+@end
+
 @implementation JelloInject
 
-#pragma mark SIMBL methods and loading
-
 + (JelloInject*)sharedInstance {
-	if (plugin == nil)
-		plugin = [[JelloInject alloc] init];
-	
-	return plugin;
+  if (plugin == nil) plugin = [[JelloInject alloc] init];
+  return plugin;
 }
 
 + (void)load {
-  JelloDiag(@"+load fired");
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[JelloInject sharedInstance] loadPlugin];
-  });
-  JelloDiag(@"+load returning");
+  JelloInjectInit();
 }
 
 - (void)loadPlugin {
+  if (g_initialized) { JelloDiag(@"loadPlugin: already initialized"); return; }
+  g_initialized = YES;
+
+  JelloSetupDragHooks();
+
   NSArray *wins = [[NSApplication sharedApplication] windows];
-  JelloDiag([NSString stringWithFormat:@"loadPlugin: %lu existing windows", (unsigned long)wins.count]);
+  JelloDiag([NSString stringWithFormat:@"loadPlugin: %lu windows", (unsigned long)wins.count]);
   for (NSWindow *window in wins) {
-    [self prepareWindow:window];
+    window.movable = NO;
   }
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(windowDidBecomeKey:)
-           name:NSWindowDidBecomeKeyNotification
-         object:nil];
-  JelloDiag(@"loadPlugin: registered NSWindowDidBecomeKeyNotification observer");
+  g_becomeKeyObserver = [[NSNotificationCenter defaultCenter]
+      addObserverForName:NSWindowDidBecomeKeyNotification
+                  object:nil
+                   queue:[NSOperationQueue mainQueue]
+              usingBlock:^(NSNotification *note) {
+    NSWindow *w = (NSWindow *)note.object;
+    if (w) w.movable = NO;
+  }];
+  JelloDiag(@"loadPlugin: hooks installed");
 }
 
-- (void)windowDidBecomeKey:(NSNotification *)note {
-  [self prepareWindow:(NSWindow *)note.object];
-}
+- (void)unloadPlugin {
+  if (!g_initialized) { JelloDiag(@"unloadPlugin: not initialized"); return; }
+  g_initialized = NO;
 
-- (void)prepareWindow:(NSWindow *)window {
-  window.movable = NO;
-  JelloDiag([NSString stringWithFormat:@"prepareWindow class=%@ movable=%d",
-            NSStringFromClass([window class]), window.movable]);
+  if (g_becomeKeyObserver) {
+    [[NSNotificationCenter defaultCenter] removeObserver:g_becomeKeyObserver];
+    g_becomeKeyObserver = nil;
+  }
+
+  JelloTeardownDragHooks();
+
+  for (NSWindow *window in [[NSApplication sharedApplication] windows]) {
+    if ([window respondsToSelector:@selector(moveStopped)]) {
+      [window moveStopped];
+    }
+    window.movable = YES;
+    if ([window respondsToSelector:@selector(resetWarp)]) {
+      [window resetWarp];
+    }
+  }
+  JelloDiag(@"unloadPlugin: done");
 }
 
 @end
+
+void JelloInjectInit(void) {
+  JelloDiag(@"JelloInjectInit called");
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[JelloInject sharedInstance] loadPlugin];
+  });
+}
+
+void JelloInjectTeardown(void) {
+  JelloDiag(@"JelloInjectTeardown called");
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[JelloInject sharedInstance] unloadPlugin];
+  });
+}

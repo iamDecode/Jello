@@ -107,6 +107,15 @@ final class InjectorController: ObservableObject {
 
     fridaQueue.async { [weak self] in
       guard let self else { return }
+      // Ask each agent to invoke JelloInjectTeardown (it dispatches the actual
+      // cleanup to the target app's main queue, so the block survives even
+      // after we unload the script below).
+      for script in self.scripts.values {
+        script.post("{\"type\":\"teardown\"}")
+      }
+      // Give agents a moment to process the posted message and kick off the
+      // main-queue block before we tear down the script context.
+      Thread.sleep(forTimeInterval: 0.3)
       for script in self.scripts.values { script.unload() }
       for session in self.sessions.values { session.detach() }
       self.scripts.removeAll()
@@ -171,6 +180,28 @@ final class InjectorController: ObservableObject {
           send({ stage: 'dlopen-failed', err });
         } else {
           send({ stage: 'dlopen-ok', handle: handle.toString() });
+
+          const initSym = Module.findGlobalExportByName('JelloInjectInit');
+          if (initSym) {
+            new NativeFunction(initSym, 'void', [])();
+            send({ stage: 'init-called' });
+          } else {
+            send({ stage: 'init-missing' });
+          }
+
+          const teardownSym = Module.findGlobalExportByName('JelloInjectTeardown');
+          recv('teardown', () => {
+            try {
+              if (teardownSym) {
+                new NativeFunction(teardownSym, 'void', [])();
+                send({ stage: 'teardown-called' });
+              } else {
+                send({ stage: 'teardown-missing' });
+              }
+            } catch (e) {
+              send({ stage: 'teardown-error', err: String(e) });
+            }
+          });
         }
       } catch (e) {
         send({ stage: 'top-level-exception', err: String(e) });

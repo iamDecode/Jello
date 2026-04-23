@@ -40,6 +40,14 @@ extern "C" {
 #endif
 
 
+@interface NSWindow (WindowAdditionsInternal)
++ (void)willMove:(id)notification;
++ (void)didMove:(NSNotification *)note;
+- (void)windowMoves:(id)notification;
+- (void)windowMoved:(CADisplayLink *)displayLink;
+- (void)jelloBeginDrag;
+@end
+
 @implementation NSWindow (WindowAdditions)
 @dynamic warp;
 
@@ -74,6 +82,8 @@ static BOOL      g_leftMouseDown = NO;
 static NSPoint   g_mouseStart;
 static NSPoint   g_originStart;
 static id        g_globalMouseUpMonitor = nil;
+static id        g_localEventMonitor = nil;
+static BOOL      g_hooksInitialized = NO;
 
 
 static void jelloEndActiveDrag() {
@@ -89,20 +99,23 @@ static void jelloEndActiveDrag() {
 }
 
 
-+ (void)load {
-  [[NSNotificationCenter defaultCenter] addObserver:self
+extern "C" void JelloSetupDragHooks(void) {
+  if (g_hooksInitialized) return;
+  g_hooksInitialized = YES;
+
+  [[NSNotificationCenter defaultCenter] addObserver:[NSWindow class]
                                            selector:@selector(willMove:)
                                                name:NSWindowWillMoveNotification
                                              object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
+  [[NSNotificationCenter defaultCenter] addObserver:[NSWindow class]
                                            selector:@selector(didMove:)
                                                name:NSWindowDidMoveNotification
                                              object:nil];
 
-  [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown
-                                                 | NSEventMaskLeftMouseDragged
-                                                 | NSEventMaskLeftMouseUp)
-                                        handler:^NSEvent *(NSEvent *event) {
+  g_localEventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown
+                                                                       | NSEventMaskLeftMouseDragged
+                                                                       | NSEventMaskLeftMouseUp)
+                                                              handler:^NSEvent *(NSEvent *event) {
     if (event.type == NSEventTypeLeftMouseDown) {
       g_leftMouseDown = YES;
       return event;
@@ -145,6 +158,31 @@ static void jelloEndActiveDrag() {
     NSLog(@"[Jello] path A drag start on %@", w);
     return nil;
   }];
+}
+
+extern "C" void JelloTeardownDragHooks(void) {
+  if (!g_hooksInitialized) return;
+  g_hooksInitialized = NO;
+
+  if (g_localEventMonitor) {
+    [NSEvent removeMonitor:g_localEventMonitor];
+    g_localEventMonitor = nil;
+  }
+  if (g_globalMouseUpMonitor) {
+    [NSEvent removeMonitor:g_globalMouseUpMonitor];
+    g_globalMouseUpMonitor = nil;
+  }
+  [[NSNotificationCenter defaultCenter] removeObserver:[NSWindow class]
+                                                  name:NSWindowWillMoveNotification
+                                                object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:[NSWindow class]
+                                                  name:NSWindowDidMoveNotification
+                                                object:nil];
+  jelloEndActiveDrag();
+}
+
++ (void)load {
+  JelloSetupDragHooks();
 }
 
 + (void)didMove:(NSNotification *)note {
