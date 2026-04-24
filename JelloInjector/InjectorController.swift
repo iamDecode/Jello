@@ -125,6 +125,14 @@ final class InjectorController: ObservableObject {
 
   // MARK: - Frida-queue helpers
 
+  private static func isApplePlatformBinary(_ app: NSRunningApplication) -> Bool {
+    // Resolve symlinks so Safari under /Applications/Safari.app is recognised
+    // via its canonical /System/Volumes/Preboot/Cryptexes/App/System/... path.
+    guard let resolved = app.bundleURL?.resolvingSymlinksInPath() else { return false }
+    let path = resolved.path
+    return path.hasPrefix("/System/") || path.hasPrefix("/Library/Apple/")
+  }
+
   private func injectOnFridaQueue(app: NSRunningApplication) {
     dispatchPrecondition(condition: .onQueue(fridaQueue))
     guard let device else { return }
@@ -132,6 +140,14 @@ final class InjectorController: ObservableObject {
     guard pid > 0 else { return }
     if let bid = app.bundleIdentifier, skipBundleIDs.contains(bid) { return }
     if sessions[pid] != nil { return }
+    // Apple platform binaries crash under Frida on macOS 26 — codeSigningMonitor
+    // SIGBUSes the target mid-patch, so there is no "injection failed" signal
+    // to react to. Skip them up front.
+    if Self.isApplePlatformBinary(app) {
+      let label = app.bundleIdentifier ?? app.localizedName ?? "pid=\(pid)"
+      log.info("Skipping Apple platform binary \(label, privacy: .public) (pid=\(pid))")
+      return
+    }
 
     let label = app.bundleIdentifier ?? app.localizedName ?? "pid=\(pid)"
     do {
