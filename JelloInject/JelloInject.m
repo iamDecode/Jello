@@ -8,15 +8,26 @@
 
 #import "JelloInject.h"
 #import "WindowAdditions.h"
+#import <os/log.h>
+
+static os_log_t jello_log(void) {
+  static os_log_t h = NULL;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{ h = os_log_create("com.decode.JelloInject", "Plugin"); });
+  return h;
+}
 
 static JelloInject *plugin = nil;
 static id g_becomeKeyObserver = nil;
 static BOOL g_initialized = NO;
 
 static void JelloDiag(NSString *msg) {
-  NSString *line = [NSString stringWithFormat:@"[JelloInject pid=%d] %@\n", getpid(), msg];
+  os_log_info(jello_log(), "pid=%d %{public}@", getpid(), msg);
+  // Best-effort file log for unsandboxed targets; sandboxed apps (e.g. Teams,
+  // App Store apps) will silently fail here — use `log stream` to see them.
   FILE *fp = fopen("/tmp/jello-inject.log", "a");
   if (!fp) return;
+  NSString *line = [NSString stringWithFormat:@"[JelloInject pid=%d] %@\n", getpid(), msg];
   fputs(line.UTF8String, fp);
   fflush(fp);
   fclose(fp);

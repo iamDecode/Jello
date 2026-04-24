@@ -207,7 +207,7 @@ extern "C" void JelloSetupDragHooks(void) {
     if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
     [w.warp startDragAt:g_mouseStart];
     [w jelloBeginDrag];
-    NSLog(@"[Jello] path A drag start on %@", w);
+    os_log_info(jello_log(), "path A drag start on %{public}@", w);
     return nil;
   }];
 }
@@ -249,7 +249,8 @@ extern "C" void JelloTeardownDragHooks(void) {
   if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
   [w.warp startDragAt:NSEvent.mouseLocation];
   [w jelloBeginDrag];
-  NSLog(@"[Jello] path B drag start on %@", w);
+  os_log_info(jello_log(), "path B drag start on %{public}@ (class=%{public}@)",
+              w, NSStringFromClass([w class]));
 
   // Mouse-up might land outside this app (e.g. over the dock) — catch it too.
   g_globalMouseUpMonitor = [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskLeftMouseUp
