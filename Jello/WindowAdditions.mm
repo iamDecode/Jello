@@ -141,12 +141,13 @@ extern "C" void JelloSetupDragHooks(void) {
 
     NSWindow *w = event.window;
     if (!w) return event;
-    NSRect content = [w contentRectForFrameRect:w.frame];
-    // Only treat drags that start in the title-bar strip as path-A.
-    // For fullSize-content / borderless / Electron frameless windows
-    // content.height == frame.height, so this check naturally skips them
-    // and they'll fall through to path B via didMove:.
-    if (event.locationInWindow.y < content.size.height) return event;
+    // Only treat drags that start in the title-bar / toolbar strip as path-A.
+    // contentLayoutRect excludes the titlebar + toolbar overlay even on
+    // full-size-content windows (common in modern native apps like Fork);
+    // contentRectForFrameRect: does not, and would reject every click there.
+    NSRect layout = w.contentLayoutRect;
+    CGFloat stripBottom = layout.origin.y + layout.size.height;
+    if (event.locationInWindow.y < stripBottom) return event;
 
     g_dragWindow = w;
     g_ownsMotion = YES;
