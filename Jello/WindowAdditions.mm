@@ -10,9 +10,17 @@
 #import "Cocoa/Cocoa.h"
 #import <SpriteKit/SpriteKit.h>
 #import <objc/runtime.h>
+#import <os/log.h>
 #import "Jello-Swift.h"
 #import "QuartzCore/QuartzCore.h"
 #import "AppKit/AppKit.h"
+
+static os_log_t jello_log(void) {
+  static os_log_t h = NULL;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{ h = os_log_create("com.decode.JelloInject", "DragHooks"); });
+  return h;
+}
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,6 +93,38 @@ static id        g_globalMouseUpMonitor = nil;
 static id        g_localEventMonitor = nil;
 static BOOL      g_hooksInitialized = NO;
 
+// Electron / Chromium (Teams, VS Code, Slack) route CSS `-webkit-app-region: drag`
+// clicks through -[NSWindow performWindowDragWithEvent:], which engages the OS
+// drag pipeline — and that pipeline clips our CGSSetWindowWarp output. Setting
+// movable=NO does NOT prevent this path; the API is independent of movable.
+// We swizzle the method so that, while hooks are active, it redirects into a
+// path-A drag (we own motion, warp is not clipped).
+static IMP g_orig_performWindowDrag = NULL;
+
+static void jelloStartOwnedDragOnWindow(NSWindow *w) {
+  if (!w || g_dragWindow) return;
+  g_dragWindow = w;
+  g_ownsMotion = YES;
+  g_mouseStart = NSEvent.mouseLocation;
+  g_originStart = w.frame.origin;
+  if (w.warp == nil) w.warp = [[Warp alloc] initWithWindow:w];
+  [w.warp startDragAt:g_mouseStart];
+  [w jelloBeginDrag];
+  os_log_info(jello_log(), "performWindowDrag → path A on %{public}@ (class=%{public}@)",
+              w, NSStringFromClass([w class]));
+}
+
+static void jello_performWindowDragWithEvent(id self, SEL _cmd, NSEvent *event) {
+  os_log_info(jello_log(),
+              "jello_performWindowDragWithEvent ENTRY hooks=%{BOOL}d window=%{public}@ class=%{public}@",
+              g_hooksInitialized, self, NSStringFromClass([self class]));
+  if (!g_hooksInitialized) {
+    ((void(*)(id, SEL, NSEvent *))g_orig_performWindowDrag)(self, _cmd, event);
+    return;
+  }
+  jelloStartOwnedDragOnWindow((NSWindow *)self);
+}
+
 
 static void jelloEndActiveDrag() {
   if (!g_dragWindow) return;
@@ -102,6 +142,17 @@ static void jelloEndActiveDrag() {
 extern "C" void JelloSetupDragHooks(void) {
   if (g_hooksInitialized) return;
   g_hooksInitialized = YES;
+
+  static dispatch_once_t installSwizzleOnce;
+  dispatch_once(&installSwizzleOnce, ^{
+    Method m = class_getInstanceMethod([NSWindow class], @selector(performWindowDragWithEvent:));
+    if (m) {
+      g_orig_performWindowDrag = method_setImplementation(m, (IMP)jello_performWindowDragWithEvent);
+      os_log_info(jello_log(), "installed performWindowDragWithEvent: swizzle on NSWindow");
+    } else {
+      os_log_error(jello_log(), "NSWindow has no performWindowDragWithEvent: method — swizzle NOT installed");
+    }
+  });
 
   [[NSNotificationCenter defaultCenter] addObserver:[NSWindow class]
                                            selector:@selector(willMove:)
