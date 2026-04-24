@@ -133,6 +133,40 @@ final class InjectorController: ObservableObject {
     return path.hasPrefix("/System/") || path.hasPrefix("/Library/Apple/")
   }
 
+  /// For sandboxed targets (App Store apps like Telegram), the default
+  /// ~/Library/Developer/... bundle path is unreadable — the sandbox blocks
+  /// open(). Stage a copy inside the target's own container tmp/ dir, which
+  /// its sandbox always permits. Returns the binary path to pass to dlopen.
+  private func preparedInjectBinaryPath(for app: NSRunningApplication) -> String {
+    let sourceBundle = URL(fileURLWithPath: bundlePath)
+    let defaultBinary = sourceBundle.appendingPathComponent("Contents/MacOS/JelloInject").path
+    guard let bid = app.bundleIdentifier else { return defaultBinary }
+    let home = FileManager.default.homeDirectoryForCurrentUser
+    let containerRoot = home.appendingPathComponent("Library/Containers/\(bid)")
+    let metadata = containerRoot.appendingPathComponent(".com.apple.containermanagerd.metadata.plist")
+    guard FileManager.default.fileExists(atPath: metadata.path) else {
+      return defaultBinary
+    }
+    let destBundle = containerRoot.appendingPathComponent("Data/tmp/JelloInject.bundle")
+    let fm = FileManager.default
+    do {
+      if fm.fileExists(atPath: destBundle.path) {
+        try fm.removeItem(at: destBundle)
+      }
+      try fm.createDirectory(
+        at: destBundle.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      try fm.copyItem(at: sourceBundle, to: destBundle)
+      return destBundle.appendingPathComponent("Contents/MacOS/JelloInject").path
+    } catch {
+      log.error(
+        "Failed to stage bundle in container for \(bid, privacy: .public): \(String(describing: error))"
+      )
+      return defaultBinary
+    }
+  }
+
   private func injectOnFridaQueue(app: NSRunningApplication) {
     dispatchPrecondition(condition: .onQueue(fridaQueue))
     guard let device else { return }
@@ -150,9 +184,10 @@ final class InjectorController: ObservableObject {
     }
 
     let label = app.bundleIdentifier ?? app.localizedName ?? "pid=\(pid)"
+    let binaryPath = preparedInjectBinaryPath(for: app)
     do {
       let session = try device.attach(pid: pid)
-      let script = try session.createScript(source: Self.agentSource(bundlePath: bundlePath))
+      let script = try session.createScript(source: Self.agentSource(binaryPath: binaryPath))
       let scriptLog = self.log
       script.setOnMessage { msg in
         scriptLog.info("script[\(label, privacy: .public) pid=\(pid)] \(msg, privacy: .public)")
@@ -168,8 +203,7 @@ final class InjectorController: ObservableObject {
     }
   }
 
-  private static func agentSource(bundlePath: String) -> String {
-    let binaryPath = (bundlePath as NSString).appendingPathComponent("Contents/MacOS/JelloInject")
+  private static func agentSource(binaryPath: String) -> String {
     let escaped =
       binaryPath
       .replacingOccurrences(of: "\\", with: "\\\\")
